@@ -1,9 +1,19 @@
 <script lang="ts">
+	/**
+	 * The tube itself: scanlines, a slow beam sweep, phosphor flicker and a
+	 * vignette. Purely decorative and pointer-transparent — mount it once,
+	 * last in the layout, and it sits over everything.
+	 */
 	type Props = {
+		/** horizontal scanlines + RGB triad mask */
 		scanlines?: boolean;
+		/** the slow vertical beam pass */
 		sweep?: boolean;
+		/** phosphor brightness jitter */
 		flicker?: boolean;
+		/** tube curvature falloff at the edges */
 		vignette?: boolean;
+		/** `fixed` covers the viewport, `absolute` the nearest positioned ancestor */
 		position?: 'fixed' | 'absolute';
 		class?: string;
 	};
@@ -37,6 +47,7 @@
 		position: absolute;
 	}
 
+	/* scanlines + phosphor triads */
 	.crt__lines {
 		position: absolute;
 		inset: 0;
@@ -58,6 +69,7 @@
 		opacity: var(--crt-scanline-opacity, 0.6);
 	}
 
+	/* slow sweep of the electron beam */
 	.crt__sweep {
 		position: absolute;
 		inset-inline: 0;
@@ -82,6 +94,7 @@
 		}
 	}
 
+	/* tube curvature + burn-in falloff */
 	.crt__vignette {
 		position: absolute;
 		inset: 0;

@@ -1,0 +1,114 @@
+/* Docs-site shell only — none of this ships in the package. */
+
+:root {
+	/* the docs site reskins the library through its own tokens */
+	--crt-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	--crt-display: 'Martian Mono', var(--crt-mono);
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	background: var(--crt-bg);
+}
+
+body {
+	margin: 0;
+	min-height: 100dvh;
+	background: var(--crt-bg);
+	color: var(--crt-phos);
+	font-family: var(--crt-mono);
+	font-size: clamp(12px, 0.55vw + 10px, 14px);
+	line-height: 1.65;
+	letter-spacing: 0.02em;
+	text-shadow: 0 0 3px rgba(74, 222, 128, 0.5);
+	-webkit-font-smoothing: antialiased;
+	overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+figure,
+pre {
+	margin: 0;
+}
+
+ul,
+ol {
+	list-style: none;
+	padding: 0;
+}
+
+a {
+	color: var(--crt-phos-hot);
+	text-decoration: none;
+	border-bottom: 1px solid var(--crt-rule);
+}
+
+:focus-visible {
+	outline: 1px solid var(--crt-phos);
+	outline-offset: 2px;
+}
+
+.shell {
+	width: min(1080px, 92vw);
+	margin-inline: auto;
+	padding-block: clamp(1.5rem, 4vh, 2.75rem) 5rem;
+	display: grid;
+	gap: 2.5rem;
+}
+
+.label {
+	font-family: var(--crt-display);
+	font-weight: 700;
+	font-size: 0.82em;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--crt-phos-dim);
+}
+
+.dim {
+	color: var(--crt-phos-dim);
+}
+
+.hot {
+	color: var(--crt-phos-hot);
+}
+
+.rule {
+	height: 1px;
+	border: 0;
+	background: linear-gradient(90deg, var(--crt-rule), rgba(74, 222, 128, 0.06));
+}
+
+pre {
+	border: 1px solid var(--crt-rule);
+	padding: 0.85rem 1rem;
+	overflow-x: auto;
+	font-size: 0.92em;
+	color: var(--crt-phos-hot);
+	text-shadow: none;
+}
+
+button.ctl {
+	font: inherit;
+	letter-spacing: 0.14em;
+	color: var(--crt-phos-hot);
+	background: none;
+	border: 1px solid var(--crt-rule);
+	padding: 0.35rem 0.8rem;
+	cursor: pointer;
+	text-shadow: inherit;
+}
+
+button.ctl:hover {
+	background: var(--crt-phos-faint);
+}

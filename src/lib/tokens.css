@@ -1,3 +1,16 @@
+/* ------------------------------------------------------------------
+   @ritsuki.kagerou/crt-ui — design tokens
+
+   Import once at the app level:
+
+       import '@ritsuki.kagerou/crt-ui/tokens.css';
+
+   Then override any token on :root — or on any ancestor element, since
+   every component reads them through the cascade — to reskin the whole
+   set. Components carry the same values as inline fallbacks, so they
+   still render correctly if this file is never imported.
+   ------------------------------------------------------------------ */
+
 :root {
 	/* --- palette ---------------------------------------------------- */
 	--crt-bg: #000000;

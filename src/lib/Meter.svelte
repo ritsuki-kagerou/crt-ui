@@ -1,10 +1,21 @@
 <script lang="ts">
+	/**
+	 * A segmented bar-graph readout. Cells light left to right on a stagger,
+	 * so a row of meters reads as a machine filling in rather than a static
+	 * chart. The value is exposed to assistive tech as an ARIA meter.
+	 */
 	type Props = {
+		/** fill fraction, 0–1 (clamped) */
 		value: number;
+		/** text label printed after the bar */
 		label?: string;
+		/** render the label in the secondary colour */
 		muted?: boolean;
+		/** number of cells in the bar */
 		cells?: number;
+		/** ms before the first cell lights */
 		delay?: number;
+		/** ms between cells */
 		stagger?: number;
 		class?: string;
 	};

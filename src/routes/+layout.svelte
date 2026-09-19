@@ -1,8 +1,9 @@
 <script lang="ts">
 	import '$lib/tokens.css';
-    import { Crt } from '$lib/index.js';
+	import '../docs.css';
+	import { Crt } from '$lib/index.js';
 
-    let { children } = $props();
+	let { children } = $props();
 </script>
 
 {@render children()}

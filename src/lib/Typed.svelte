@@ -1,11 +1,27 @@
 <script lang="ts">
+	/**
+	 * Types a line of text out one character at a time, with a caret.
+	 *
+	 * SSR-safe by construction: the server renders the finished line and the
+	 * client hydrates into exactly that, so there is never a markup mismatch.
+	 * Typing only begins once the effect runs — i.e. after hydration.
+	 */
 	type Props = {
 		text: string;
+		/** ms per character */
 		speed?: number;
+		/** ms to wait before the first character */
 		delay?: number;
+		/** keep a blinking caret after the line finishes */
 		hold?: boolean;
 		class?: string;
 		oncomplete?: () => void;
+		/**
+		 * Fired whenever new characters are drawn, with the count drawn so
+		 * far — once per animation frame, not once per character, since a
+		 * fast `speed` draws several characters in a single frame. Meant for
+		 * driving a keystroke sound; throttle on the receiving end.
+		 */
 		ontick?: (drawn: number) => void;
 	};
 
@@ -19,6 +35,7 @@
 		ontick
 	}: Props = $props();
 
+	/** `null` means "whole line, no caret" — the state SSR renders. */
 	let shown = $state<number | null>(null);
 
 	$effect(() => {
@@ -32,6 +49,7 @@
 			return;
 		}
 
+		// local mirror so the loop never reads reactive state (no self-dependency)
 		let drawn = 0;
 		let start: number | null = null;
 		let frame = 0;
@@ -72,6 +90,7 @@
 >
 
 <style>
+	/* the full line stays in the accessibility tree; the animation is decoration */
 	.crt-sr {
 		position: absolute;
 		width: 1px;

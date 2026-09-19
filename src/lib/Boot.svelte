@@ -1,14 +1,28 @@
 <script lang="ts">
 	import Typed from './Typed.svelte';
 
+	/**
+	 * A POST-style boot log: each line types itself, then hands off to the
+	 * next, and a stepped progress bar closes the sequence before `ondone`
+	 * fires. Under `prefers-reduced-motion` the lines resolve instantly and
+	 * the bar shortens, so the sequence still reads but never crawls.
+	 */
 	type Props = {
+		/** the log, one entry per line (empty strings are legal spacers) */
 		lines: string[];
+		/** header printed above the log */
 		unit?: string;
+		/** footer shown once the progress bar appears */
 		hint?: string;
+		/** ms per character */
 		speed?: number;
+		/** ms the progress bar takes to fill */
 		duration?: number;
+		/** let a key press or a pointer press end the sequence early */
 		skippable?: boolean;
+		/** called when the sequence finishes, or when it is skipped */
 		ondone: () => void;
+		/** forwarded to each line's `Typed` — see its `ontick` */
 		ontick?: (drawn: number) => void;
 		class?: string;
 	};

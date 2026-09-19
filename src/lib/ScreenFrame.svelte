@@ -2,13 +2,24 @@
 	import type { Snippet } from 'svelte';
 	import Typed from './Typed.svelte';
 
+	/**
+	 * The chrome around one screen of a terminal UI: typed title, sector
+	 * code, rules top and bottom, and a back control. Content goes in the
+	 * default snippet; everything else is text props.
+	 */
 	type Props = {
 		title: string;
+		/** right-aligned code in the title bar, e.g. `SECTOR 02/05` */
 		code?: string;
+		/** label on the back control */
 		hint?: string;
+		/** right-aligned footer text */
 		footer?: string;
+		/** omit to render the frame without a back control */
 		onback?: () => void;
+		/** ms per character for the title */
 		titleSpeed?: number;
+		/** forwarded to the title's `Typed` — see its `ontick` */
 		ontick?: (drawn: number) => void;
 		class?: string;
 		children: Snippet;
