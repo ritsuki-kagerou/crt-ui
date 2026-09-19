@@ -1,0 +1,38 @@
+:root {
+	/* --- palette ---------------------------------------------------- */
+	--crt-bg: #000000;
+	--crt-phos: #4ade80;
+	--crt-phos-hot: #d5ffe6;
+	--crt-phos-mid: rgba(74, 222, 128, 0.62);
+	--crt-phos-dim: rgba(74, 222, 128, 0.4);
+	--crt-phos-faint: rgba(74, 222, 128, 0.16);
+	--crt-bar: #1ee07c;
+	--crt-rule: rgba(74, 222, 128, 0.26);
+	--crt-glow: rgba(30, 224, 124, 0.5);
+
+	/* --- type ------------------------------------------------------- */
+	--crt-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	--crt-display: var(--crt-mono);
+	--crt-tracking: 0.12em;
+
+	/* --- tube (Crt) ------------------------------------------------- */
+	--crt-z: 90;
+	--crt-scanline-gap: 3px;
+	--crt-scanline-ink: rgba(0, 0, 0, 0.26);
+	--crt-scanline-opacity: 0.6;
+	--crt-sweep-height: 42vh;
+	--crt-sweep-duration: 7.5s;
+	--crt-flicker-duration: 4.2s;
+	--crt-flicker-ink: rgba(74, 222, 128, 0.025);
+	--crt-vignette-strength: 0.55;
+
+	/* --- caret (Typed) ---------------------------------------------- */
+	--crt-caret-width: 0.58em;
+	--crt-caret-height: 1.02em;
+	--crt-caret-blink: 1.06s;
+
+	/* --- cells (Meter, Boot) ---------------------------------------- */
+	--crt-cell-width: 6px;
+	--crt-cell-height: 12px;
+	--crt-cell-gap: 2px;
+}
