@@ -1,5 +1,5 @@
 {
-	"name": "@ritsuki/crt-ui",
+	"name": "@ritsuki.kagerou/crt-ui",
 	"version": "0.1.0",
 	"type": "module",
 	"svelte": "./dist/index.js",
