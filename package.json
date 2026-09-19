@@ -39,5 +39,22 @@
 		"prepublishOnly": "pnpm package",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
-	}
+	},
+	"description": "CRT terminal components for Svelte 5 — SSR-safe, token-driven, reduced-motion aware.",
+	"license": "MIT",
+	"author": "Ritsuki <ritsuki.kagerou@gmail.com>",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ritsuki-kagerou/crt-ui.git"
+	},
+	"homepage": "https://github.com/ritsuki-kagerou/crt-ui#readme",
+	"keywords": [
+		"svelte",
+		"svelte5",
+		"crt",
+		"terminal",
+		"retro",
+		"phosphor",
+		"components"
+	]
 }
