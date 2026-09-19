@@ -1,6 +1,6 @@
 <script>
       import '$lib/tokens.css';
-      import { Typed, Meter } from '$lib/index.js';
+      import { Typed, Meter, Boot } from '$lib/index.js';
 </script>
 
 <h1>crt-ui sandbox</h1>
@@ -28,3 +28,9 @@
       .row { display: flex; gap: 8px; }
       .row span { width: 60px; height: 60px; }
 </style>
+
+<Boot
+      lines={['POST ... OK', 'MEMORY CHECK ... OK', 'LOADING CRT-UI ...']}
+      unit="CRT-UI"
+      ondone={() => console.log('boot selesai')}
+/>
