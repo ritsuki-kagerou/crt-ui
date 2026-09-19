@@ -1,6 +1,6 @@
 <script>
       import '$lib/tokens.css';
-      import Typed from '$lib/Typed.svelte';
+      import { Typed } from '$lib/index.js';
 </script>
 
 <h1>crt-ui sandbox</h1>

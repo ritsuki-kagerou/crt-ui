@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '$lib/tokens.css';
-    import Crt from '$lib/Crt.svelte';
+    import { Crt } from '$lib/index.js';
 
     let { children } = $props();
 </script>
