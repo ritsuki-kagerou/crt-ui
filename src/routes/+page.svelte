@@ -1,5 +1,6 @@
 <script>
       import '$lib/tokens.css';
+      import Typed from '$lib/Typed.svelte';
 </script>
 
 <h1>crt-ui sandbox</h1>
@@ -9,6 +10,9 @@
       <span style="background: var(--crt-bar)"></span>
       <span style="background: var(--crt-phos-dim)"></span>
 </div>
+
+<p><Typed text="booting crt-ui ..." /></p>
+<p><Typed text="ini tulisan lambat" speed={60} /></p>
 
 <style>
       :global(body) {
