@@ -1,6 +1,6 @@
 <script>
       import '$lib/tokens.css';
-      import { Typed } from '$lib/index.js';
+      import { Typed, Meter } from '$lib/index.js';
 </script>
 
 <h1>crt-ui sandbox</h1>
@@ -13,7 +13,11 @@
 
 <p><Typed text="booting crt-ui ..." /></p>
 <p><Typed text="ini tulisan lambat" speed={60} /></p>
-<p><a href="#"><Typed text="test link" speed={60} /></a></p>
+<p><button onclick={() => console.log('kena klik')}><Typed text="test link" speed={60} /></button></p>
+
+<Meter value={0.8} label="PRIMARY" />
+<Meter value={0.45} label="WORKING" muted />
+<Meter value={1.7} label="CLAMP TEST" />
 
 <style>
       :global(body) {
