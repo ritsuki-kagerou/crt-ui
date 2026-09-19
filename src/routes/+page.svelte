@@ -13,6 +13,7 @@
 
 <p><Typed text="booting crt-ui ..." /></p>
 <p><Typed text="ini tulisan lambat" speed={60} /></p>
+<p><a href="#"><Typed text="test link" speed={60} /></a></p>
 
 <style>
       :global(body) {
