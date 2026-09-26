@@ -109,7 +109,7 @@ Svelte 5 is a peer dependency. No runtime dependencies.
 
 ## Theming
 
-Import `@ritsuki/crt-ui/tokens.css` once, then override any `--crt-*` custom property —
+Import `@ritsuki.kagerou/crt-ui/tokens.css` once, then override any `--crt-*` custom property —
 on `:root`, or on any ancestor, since every component reads them through the cascade:
 
 ```css

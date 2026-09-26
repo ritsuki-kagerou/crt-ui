@@ -1,7 +1,7 @@
 /**
  * @ritsuki.kagerou/crt-ui — CRT terminal components for Svelte 5.
  *
- * Styling is token-driven: import `@ritsuki/crt-ui/tokens.css` once and
+ * Styling is token-driven: import `@ritsuki.kagerou/crt-ui/tokens.css` once and
  * override the `--crt-*` custom properties, or skip the file entirely and
  * set the tokens yourself — every component ships the defaults inline.
  */
