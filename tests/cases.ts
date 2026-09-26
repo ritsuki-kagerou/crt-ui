@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { Crt } from '$lib/index.js';
+import { Crt, Meter } from '$lib/index.js';
 
 const noop = () => {};
 
@@ -16,6 +16,11 @@ export const CASES: Case[] = [
 		name: 'Crt',
 		component: Crt,
 		props: {}
+	},
+	{
+		name: 'Meter',
+		component: Meter,
+		props: { value: 0.6, label: 'PRIMARY' }
 	}
 ];
 
