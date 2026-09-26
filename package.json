@@ -49,7 +49,9 @@
 		"lint": "prettier --check .",
 		"test:ssr": "vitest run --project=ssr",
 		"test:hydration": "vitest run --project=hydration",
-		"check:app": "pnpm --filter crt-ui-ssr-app check"
+		"check:app": "pnpm --filter crt-ui-ssr-app check",
+		"test:e2e": "pnpm package && pnpm --filter crt-ui-ssr-app test:e2e",
+		"test:all": "pnpm check && pnpm test && pnpm test:e2e"
 	},
 	"description": "CRT terminal components for Svelte 5 — SSR-safe, token-driven, reduced-motion aware.",
 	"license": "MIT",
