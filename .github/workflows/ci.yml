@@ -36,6 +36,11 @@ jobs:
       - name: Typecheck the library
         run: pnpm check
 
+      # the SSR test app imports the package through dist/, which only
+      # exists after packaging
+      - name: Build the package
+        run: pnpm package
+
       - name: Typecheck the SSR test app
         run: pnpm check:app
 
@@ -43,9 +48,6 @@ jobs:
       # `hydration` mounts the browser build and must land on the same markup.
       - name: SSR and hydration unit tests
         run: pnpm test
-
-      - name: Build the package
-        run: pnpm package
 
       - name: Build the docs site
         run: pnpm build
