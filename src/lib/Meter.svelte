@@ -36,7 +36,11 @@
 	let percent = $derived(Math.round(fraction * 100));
 </script>
 
-<span class="meter {klass}" style:--crt-meter-delay={`${delay}ms`} style:--crt-meter-step={`${stagger}ms`}>
+<span
+	class="meter {klass}"
+	style:--crt-meter-delay={`${delay}ms`}
+	style:--crt-meter-step={`${stagger}ms`}
+>
 	<span
 		class="meter__bar"
 		role="meter"

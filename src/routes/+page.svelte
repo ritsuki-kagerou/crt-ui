@@ -82,8 +82,8 @@
 			<Meter value={0.45} label="32 CELLS" cells={32} delay={360} stagger={14} />
 		</div>
 		<p class="note dim">
-			Takes a 0–1 fraction, not a category — the consumer decides what a tier means. Exposed
-			to assistive tech as <code>role="meter"</code>.
+			Takes a 0–1 fraction, not a category — the consumer decides what a tier means. Exposed to
+			assistive tech as <code>role="meter"</code>.
 		</p>
 	</section>
 
@@ -114,9 +114,8 @@
 			{/key}
 		</div>
 		<p class="note dim">
-			Lines chain through <code>Typed</code>'s <code>oncomplete</code>; the stepped bar closes
-			the sequence. <code>skippable</code> is off here so the demo cannot be ended by a stray
-			key press.
+			Lines chain through <code>Typed</code>'s <code>oncomplete</code>; the stepped bar closes the
+			sequence. <code>skippable</code> is off here so the demo cannot be ended by a stray key press.
 		</p>
 	</section>
 
@@ -166,9 +165,8 @@
 			/>
 		</div>
 		<p class="note dim">
-			Pointer-transparent and <code>aria-hidden</code>. Mounted once in the root layout it
-			covers the viewport; with <code>position="absolute"</code> it covers the nearest
-			positioned ancestor instead.
+			Pointer-transparent and <code>aria-hidden</code>. Mounted once in the root layout it covers
+			the viewport; with <code>position="absolute"</code> it covers the nearest positioned ancestor instead.
 		</p>
 	</section>
 

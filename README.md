@@ -28,7 +28,11 @@ Svelte 5 is a peer dependency. No runtime dependencies.
 </script>
 
 {#if !booted}
-	<Boot lines={['RK/OS — BIOS 04.71', 'MEMORY CHECK ... OK']} unit="RK/OS 9000" ondone={() => (booted = true)} />
+	<Boot
+		lines={['RK/OS — BIOS 04.71', 'MEMORY CHECK ... OK']}
+		unit="RK/OS 9000"
+		ondone={() => (booted = true)}
+	/>
 {:else}
 	<ScreenFrame title="CAPABILITY MATRIX" code="SECTOR 02/05" onback={() => (booted = false)}>
 		<p><Typed text="BACKEND & API" speed={18} /></p>
@@ -43,65 +47,65 @@ Svelte 5 is a peer dependency. No runtime dependencies.
 
 | Component     | What it does                                                             |
 | ------------- | ------------------------------------------------------------------------ |
-| `Typed`       | Types one line out, with a caret that can hold and blink after the line.  |
-| `Crt`         | The tube: scanlines, beam sweep, phosphor flicker, vignette.              |
-| `Meter`       | Segmented bar readout driven by a 0–1 fraction.                           |
-| `Boot`        | A POST-style boot log that chains lines, then a stepped progress bar.     |
-| `ScreenFrame` | Chrome around one screen: typed title, sector code, rules, back control.  |
+| `Typed`       | Types one line out, with a caret that can hold and blink after the line. |
+| `Crt`         | The tube: scanlines, beam sweep, phosphor flicker, vignette.             |
+| `Meter`       | Segmented bar readout driven by a 0–1 fraction.                          |
+| `Boot`        | A POST-style boot log that chains lines, then a stepped progress bar.    |
+| `ScreenFrame` | Chrome around one screen: typed title, sector code, rules, back control. |
 
 ### `Typed`
 
-| Prop         | Type         | Default | Notes                                    |
-| ------------ | ------------ | ------- | ---------------------------------------- |
-| `text`       | `string`     | —       | required                                 |
-| `speed`      | `number`     | `12`    | ms per character                         |
-| `delay`      | `number`     | `0`     | ms before the first character            |
-| `hold`       | `boolean`    | `false` | keep a blinking caret after the line     |
-| `oncomplete` | `() => void` | —       | fires once the last character is drawn   |
-| `ontick`     | `(drawn: number) => void` | — | fires per frame as characters appear |
+| Prop         | Type                      | Default | Notes                                  |
+| ------------ | ------------------------- | ------- | -------------------------------------- |
+| `text`       | `string`                  | —       | required                               |
+| `speed`      | `number`                  | `12`    | ms per character                       |
+| `delay`      | `number`                  | `0`     | ms before the first character          |
+| `hold`       | `boolean`                 | `false` | keep a blinking caret after the line   |
+| `oncomplete` | `() => void`              | —       | fires once the last character is drawn |
+| `ontick`     | `(drawn: number) => void` | —       | fires per frame as characters appear   |
 
 ### `Crt`
 
-| Prop                                     | Type                      | Default   |
-| ---------------------------------------- | ------------------------- | --------- |
-| `scanlines` / `sweep` / `flicker` / `vignette` | `boolean`           | `true`    |
-| `position`                               | `'fixed' \| 'absolute'`   | `'fixed'` |
+| Prop                                           | Type                    | Default   |
+| ---------------------------------------------- | ----------------------- | --------- |
+| `scanlines` / `sweep` / `flicker` / `vignette` | `boolean`               | `true`    |
+| `position`                                     | `'fixed' \| 'absolute'` | `'fixed'` |
 
 ### `Meter`
 
-| Prop      | Type      | Default | Notes                             |
-| --------- | --------- | ------- | --------------------------------- |
-| `value`   | `number`  | —       | 0–1, clamped                      |
-| `label`   | `string`  | `''`    | printed after the bar             |
-| `muted`   | `boolean` | `false` | label in the secondary colour     |
-| `cells`   | `number`  | `24`    | segments in the bar               |
-| `delay`   | `number`  | `0`     | ms before the first cell lights   |
-| `stagger` | `number`  | `26`    | ms between cells                  |
+| Prop      | Type      | Default | Notes                           |
+| --------- | --------- | ------- | ------------------------------- |
+| `value`   | `number`  | —       | 0–1, clamped                    |
+| `label`   | `string`  | `''`    | printed after the bar           |
+| `muted`   | `boolean` | `false` | label in the secondary colour   |
+| `cells`   | `number`  | `24`    | segments in the bar             |
+| `delay`   | `number`  | `0`     | ms before the first cell lights |
+| `stagger` | `number`  | `26`    | ms between cells                |
 
 ### `Boot`
 
-| Prop        | Type         | Default                       | Notes                            |
-| ----------- | ------------ | ----------------------------- | -------------------------------- |
-| `lines`     | `string[]`   | —                             | empty strings are legal spacers  |
-| `unit`      | `string`     | `''`                          | header above the log             |
-| `hint`      | `string`     | `'PRESS ANY KEY TO CONTINUE'` |                                  |
-| `speed`     | `number`     | `9`                           | ms per character                 |
-| `duration`  | `number`     | `1100`                        | ms for the progress bar          |
-| `skippable` | `boolean`    | `true`                        | key / pointer ends it early      |
-| `ondone`    | `() => void` | —                             | required                         |
-| `ontick`    | `(drawn: number) => void` | —               | forwarded to each line's `Typed`  |
+| Prop        | Type                      | Default                       | Notes                            |
+| ----------- | ------------------------- | ----------------------------- | -------------------------------- |
+| `lines`     | `string[]`                | —                             | empty strings are legal spacers  |
+| `unit`      | `string`                  | `''`                          | header above the log             |
+| `hint`      | `string`                  | `'PRESS ANY KEY TO CONTINUE'` |                                  |
+| `speed`     | `number`                  | `9`                           | ms per character                 |
+| `duration`  | `number`                  | `1100`                        | ms for the progress bar          |
+| `skippable` | `boolean`                 | `true`                        | key / pointer ends it early      |
+| `ondone`    | `() => void`              | —                             | required                         |
+| `ontick`    | `(drawn: number) => void` | —                             | forwarded to each line's `Typed` |
 
 ### `ScreenFrame`
 
-| Prop         | Type         | Default        | Notes                              |
-| ------------ | ------------ | -------------- | ---------------------------------- |
-| `title`      | `string`     | —              | typed on mount                     |
-| `code`       | `string`     | `''`           | right-aligned in the title bar     |
-| `hint`       | `string`     | `'[ESC] BACK'` | label on the back control          |
-| `footer`     | `string`     | `''`           | right-aligned footer text          |
-| `onback`     | `() => void` | —              | omit to render without the control |
-| `titleSpeed` | `number`     | `26`           | ms per character                   |
-| `ontick`     | `(drawn: number) => void` | —  | forwarded to the title's `Typed`   |
+| Prop         | Type                      | Default        | Notes                              |
+| ------------ | ------------------------- | -------------- | ---------------------------------- |
+| `title`      | `string`                  | —              | typed on mount                     |
+| `code`       | `string`                  | `''`           | right-aligned in the title bar     |
+| `hint`       | `string`                  | `'[ESC] BACK'` | label on the back control          |
+| `footer`     | `string`                  | `''`           | right-aligned footer text          |
+| `onback`     | `() => void`              | —              | omit to render without the control |
+| `titleSpeed` | `number`                  | `26`           | ms per character                   |
+| `ontick`     | `(drawn: number) => void` | —              | forwarded to the title's `Typed`   |
 
 ## Theming
 

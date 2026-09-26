@@ -84,8 +84,11 @@
 	let showCaret = $derived(typing || (hold && shown !== null));
 </script>
 
-<span class={klass}><span class="crt-sr">{text}</span><span aria-hidden="true">{visible}</span
-	>{#if showCaret}<span class="crt-caret" class:crt-caret--blink={!typing} aria-hidden="true"
+<span class={klass}
+	><span class="crt-sr">{text}</span><span aria-hidden="true">{visible}</span>{#if showCaret}<span
+			class="crt-caret"
+			class:crt-caret--blink={!typing}
+			aria-hidden="true"
 		></span>{/if}</span
 >
 

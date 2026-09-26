@@ -117,13 +117,27 @@
 
 	@keyframes crt-flicker {
 		0%,
-		100% {opacity: 0.25;}
-		7% {opacity: 0.55;}
-		9% {opacity: 0.18;}
-		31% {opacity: 0.42;}
-		33% {opacity: 0.22;}
-		67% {opacity: 0.5;}
-		69% {opacity: 0.2;}
+		100% {
+			opacity: 0.25;
+		}
+		7% {
+			opacity: 0.55;
+		}
+		9% {
+			opacity: 0.18;
+		}
+		31% {
+			opacity: 0.42;
+		}
+		33% {
+			opacity: 0.22;
+		}
+		67% {
+			opacity: 0.5;
+		}
+		69% {
+			opacity: 0.2;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
