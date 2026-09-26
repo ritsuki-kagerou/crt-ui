@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { createRawSnippet } from 'svelte';
 
 import { Crt, Meter, Typed, Boot, ScreenFrame } from '$lib/index.js';
+import Kitchen from './fixtures/Kitchen.svelte';
 
 const noop = () => {};
 
@@ -53,6 +54,11 @@ export const CASES: Case[] = [
 			onback: noop,
 			children: createRawSnippet(() => ({ render: () => '<p>CONTENT</p>' }))
 		}
+	},
+	{
+		name: 'Kitchen',
+		component: Kitchen,
+		props: {}
 	}
 ];
 
