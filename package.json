@@ -48,7 +48,8 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check .",
 		"test:ssr": "vitest run --project=ssr",
-		"test:hydration": "vitest run --project=hydration"
+		"test:hydration": "vitest run --project=hydration",
+		"check:app": "pnpm --filter crt-ui-ssr-app check"
 	},
 	"description": "CRT terminal components for Svelte 5 — SSR-safe, token-driven, reduced-motion aware.",
 	"license": "MIT",

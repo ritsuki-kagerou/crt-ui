@@ -3,3 +3,5 @@ build
 .svelte-kit
 pnpm-lock.yaml
 tests/__markup__
+test-results
+playwright-report

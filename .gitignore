@@ -7,3 +7,9 @@ node_modules
 .env
 .env.*
 !.env.example
+
+# SSR/hydration integration test app
+/tests/ssr-app/.svelte-kit
+/tests/ssr-app/build
+/tests/ssr-app/test-results
+/tests/ssr-app/playwright-report
