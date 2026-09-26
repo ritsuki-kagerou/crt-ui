@@ -5,6 +5,13 @@ on:
     branches: [main]
   pull_request:
 
+# Read-only token by default; jobs that need more ask for it explicitly.
+permissions:
+  contents: read
+
+env:
+  IMAGE: ghcr.io/ritsuki-kagerou/crt-ui
+
 jobs:
   verify:
     name: check + unit (node ${{ matrix.node }})
@@ -86,3 +93,73 @@ jobs:
           name: playwright-report
           path: tests/ssr-app/playwright-report
           retention-days: 7
+
+  # ── Docs site → crt-ui.ritsuki.dev ────────────────────────────
+  # Only after every check above has passed, and only for pushes to main.
+  # Pull requests (including ones from forks) never build or deploy.
+
+  image:
+    name: build docs image
+    needs: [verify, hydration]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - id: tag
+        run: echo "tag=sha-${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.tag.outputs.tag }}
+            ${{ env.IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # The repo is public, so everything that identifies the VM lives in the
+  # `production` environment's secrets, which GitHub only releases to jobs
+  # running on main. On the VM, DEPLOY_SSH_KEY can only run
+  # `deploy-app crt-ui <tag>` (forced command): no shell, no other app.
+  deploy:
+    name: deploy to VM
+    needs: image
+    runs-on: ubuntu-latest
+    environment: production
+    permissions: {}
+    concurrency:
+      group: deploy
+      cancel-in-progress: false
+    steps:
+      - name: Run deploy-app on the VM
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_PORT: ${{ secrets.VM_PORT }}
+          # `ssh-keyscan -p <port> -t ed25519 <host>`, pinned so the
+          # connection cannot be redirected
+          VM_HOST_KEY: ${{ secrets.VM_HOST_KEY }}
+          TAG: ${{ needs.image.outputs.tag }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy
+          chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$VM_HOST_KEY" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy -p "$VM_PORT" \
+            -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "deploy@$VM_HOST" "$TAG"

@@ -1,0 +1,13 @@
+**/node_modules
+**/.svelte-kit
+build
+dist
+tests/ssr-app/build
+tests/ssr-app/test-results
+tests/ssr-app/playwright-report
+.git
+.github
+.env
+.env.*
+*.log
+*.tgz
