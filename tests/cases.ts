@@ -1,7 +1,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { createRawSnippet } from 'svelte';
 
-import { Crt, Meter } from '$lib/index.js';
+import { Crt, Meter, Typed, Boot, ScreenFrame } from '$lib/index.js';
 
 const noop = () => {};
 
@@ -18,9 +19,40 @@ export const CASES: Case[] = [
 		props: {}
 	},
 	{
+		name: 'Crt (layers off)',
+		component: Crt,
+		props: { scanlines: false, sweep: false, flicker: false, vignette: false }
+	},
+	{
 		name: 'Meter',
 		component: Meter,
 		props: { value: 0.6, label: 'PRIMARY' }
+	},
+	{
+		name: 'Typed',
+		component: Typed,
+		props: { text: 'BACKEND & API', speed: 4 }
+	},
+	{
+		name: 'Typed (hold)',
+		component: Typed,
+		props: { text: 'HOLD ME', hold: true }
+	},
+	{
+		name: 'Boot',
+		component: Boot,
+		props: { lines: ['ONE', 'TWO', 'THREE'], unit: 'UNIT', ondone: noop }
+	},
+	{
+		name: 'ScreenFrame',
+		component: ScreenFrame,
+		props: {
+			title: 'CAPABILITY MATRIX',
+			code: 'SECTOR 02/05',
+			footer: 'EOF',
+			onback: noop,
+			children: createRawSnippet(() => ({ render: () => '<p>CONTENT</p>' }))
+		}
 	}
 ];
 
