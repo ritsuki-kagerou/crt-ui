@@ -130,8 +130,16 @@ on `:root`, or on any ancestor, since every component reads them through the cas
 }
 ```
 
+The dimmer shades (`--crt-phos-mid`, `-dim`, `-faint`, `--crt-rule`, `--crt-glow`,
+`--crt-flicker-ink`) and the tube's sweep and glow are derived from `--crt-phos`,
+`--crt-phos-hot` and `--crt-bar` with `color-mix()`, so the three lines above re-skin
+everything. The derived tokens are computed where `tokens.css` declares them, on `:root`: when
+you re-skin a single subtree instead, set the shades you need on that ancestor as well.
+
 Every component carries the same defaults inline, so skipping `tokens.css` and declaring
 the tokens yourself works too. Full list: [`src/lib/tokens.css`](src/lib/tokens.css).
+
+`color-mix()` needs Chrome/Edge 111, Safari 16.2 or Firefox 113 and later.
 
 ## Development
 

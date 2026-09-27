@@ -69,7 +69,8 @@
 		opacity: var(--crt-scanline-opacity, 0.6);
 	}
 
-	/* slow sweep of the electron beam */
+	/* slow sweep of the electron beam — tinted by the phosphor tokens, so a
+	   re-skinned tube sweeps in its own colour */
 	.crt__sweep {
 		position: absolute;
 		inset-inline: 0;
@@ -77,9 +78,9 @@
 		background: linear-gradient(
 			180deg,
 			transparent,
-			rgba(74, 222, 128, 0.035) 46%,
-			rgba(180, 255, 210, 0.055) 50%,
-			rgba(74, 222, 128, 0.035) 54%,
+			color-mix(in srgb, var(--crt-phos, #4ade80) 3.5%, transparent) 46%,
+			color-mix(in srgb, var(--crt-phos-hot, #d5ffe6) 5.5%, transparent) 50%,
+			color-mix(in srgb, var(--crt-phos, #4ade80) 3.5%, transparent) 54%,
 			transparent
 		);
 		animation: crt-sweep var(--crt-sweep-duration, 7.5s) linear infinite;
@@ -104,7 +105,11 @@
 				transparent 58%,
 				rgba(0, 0, 0, var(--crt-vignette-strength, 0.55)) 100%
 			),
-			radial-gradient(90% 70% at 50% 46%, rgba(74, 222, 128, 0.06), transparent 70%);
+			radial-gradient(
+				90% 70% at 50% 46%,
+				color-mix(in srgb, var(--crt-phos, #4ade80) 6%, transparent),
+				transparent 70%
+			);
 	}
 
 	.crt__flicker {

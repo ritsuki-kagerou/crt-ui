@@ -99,3 +99,37 @@ test.describe('hydration', () => {
 		await expect(page.locator('.crt')).toHaveCSS('pointer-events', 'none');
 	});
 });
+
+test.describe('theming', () => {
+	test('re-skinning --crt-phos re-colours everything derived from it', async ({ page }) => {
+		await page.goto('/');
+		await expect(page.getByTestId('boot-state')).toHaveText('DONE');
+
+		const read = () =>
+			page.evaluate(() => {
+				const root = getComputedStyle(document.documentElement);
+				const bg = (sel: string) => getComputedStyle(document.querySelector(sel)!).backgroundImage;
+				return {
+					sweep: bg('.crt__sweep'),
+					glow: bg('.crt__vignette'),
+					rule: root.getPropertyValue('--crt-rule'),
+					dim: root.getPropertyValue('--crt-phos-dim'),
+					flicker: root.getPropertyValue('--crt-flicker-ink'),
+					glowToken: root.getPropertyValue('--crt-glow')
+				};
+			});
+
+		const green = await read();
+		await page.evaluate(() => {
+			const root = document.documentElement.style;
+			root.setProperty('--crt-phos', '#ffb000');
+			root.setProperty('--crt-phos-hot', '#ffe9bf');
+			root.setProperty('--crt-bar', '#ffc23d');
+		});
+		const amber = await read();
+
+		for (const key of Object.keys(green) as (keyof typeof green)[]) {
+			expect(amber[key], `${key} did not follow the phosphor tokens`).not.toBe(green[key]);
+		}
+	});
+});
