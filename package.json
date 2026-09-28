@@ -61,7 +61,7 @@
 		"type": "git",
 		"url": "git+https://github.com/ritsuki-kagerou/crt-ui.git"
 	},
-	"homepage": "https://github.com/ritsuki-kagerou/crt-ui#readme",
+	"homepage": "https://crt-ui.ritsuki.dev",
 	"keywords": [
 		"svelte",
 		"svelte5",

@@ -38,6 +38,25 @@
 		name="description"
 		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame."
 	/>
+	<link rel="canonical" href="https://crt-ui.ritsuki.dev/" />
+
+	<!-- link previews (Discord, Slack, X…) -->
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="crt-ui" />
+	<meta property="og:title" content="crt-ui — CRT terminal components for Svelte 5" />
+	<meta
+		property="og:description"
+		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame."
+	/>
+	<meta property="og:url" content="https://crt-ui.ritsuki.dev/" />
+	<meta property="og:image" content="https://crt-ui.ritsuki.dev/og.png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta
+		property="og:image:alt"
+		content="The crt-ui docs page: the package name, tagline and install command in green phosphor."
+	/>
+	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
 <main class="shell">
