@@ -36,8 +36,17 @@ describe('SSR output is the settled, animation-free state', () => {
 	it('Typed renders the finished line and no caret', () => {
 		const markup = render(Typed, { props: { text: 'BACKEND & API' } }).body;
 
-		expect(markup.match(/BACKEND &amp; API/g)).toHaveLength(2);
 		expect(markup).not.toContain('crt-caret');
+	});
+
+	it('Typed puts the line in the markup exactly once', () => {
+		const markup = render(Typed, { props: { text: 'BACKEND & API' } }).body;
+		const text = markup.replace(/<[^>]*>/g, '');
+
+		expect(markup.match(/BACKEND &amp; API/g)).toHaveLength(1);
+		expect(markup).not.toContain('crt-sr');
+		expect(markup).not.toContain('aria-hidden');
+		expect(text).toBe('BACKEND &amp; API');
 	});
 
 	it('Typed ignores `hold` on the server — the caret is client-only', () => {
@@ -92,6 +101,45 @@ describe('SSR output is the settled, animation-free state', () => {
 		expect(markup).toContain('SECTOR 02/05');
 		expect(markup).toContain('<p>CONTENT</p>');
 		expect(markup).not.toContain('crt-caret');
+	});
+
+	it('ScreenFrame renders the back control as a button when only `onback` is given', () => {
+		const markup = render(ScreenFrame, {
+			props: {
+				title: 'T',
+				onback: noop,
+				children: createRawSnippet(() => ({ render: () => '<p></p>' }))
+			}
+		}).body;
+
+		expect(markup).toMatch(/<button class="screen__back[^"]*"[^>]*>\[ESC\] BACK<\/button>/);
+		expect(markup).not.toContain('<a ');
+	});
+
+	it('ScreenFrame renders the back control as a link when `backHref` is given', () => {
+		for (const onback of [noop, undefined]) {
+			const markup = render(ScreenFrame, {
+				props: {
+					title: 'T',
+					backHref: '?screen=menu',
+					onback,
+					children: createRawSnippet(() => ({ render: () => '<p></p>' }))
+				}
+			}).body;
+
+			expect(markup).toMatch(
+				/<a class="screen__back[^"]*" href="\?screen=menu"[^>]*>\[ESC\] BACK<\/a>/
+			);
+			expect(markup).not.toContain('<button');
+		}
+	});
+
+	it('ScreenFrame renders no back control without `onback` or `backHref`', () => {
+		const markup = render(ScreenFrame, {
+			props: { title: 'T', children: createRawSnippet(() => ({ render: () => '<p></p>' })) }
+		}).body;
+
+		expect(markup).not.toContain('screen__back');
 	});
 });
 

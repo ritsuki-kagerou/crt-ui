@@ -85,15 +85,18 @@
 </script>
 
 <span class={klass}
-	><span class="crt-sr">{text}</span><span aria-hidden="true">{visible}</span>{#if showCaret}<span
-			class="crt-caret"
-			class:crt-caret--blink={!typing}
-			aria-hidden="true"
+	>{#if shown === null}{text}{:else}<span class="crt-sr">{text}</span><span aria-hidden="true"
+			>{visible}</span
+		>{/if}{#if showCaret}<span class="crt-caret" class:crt-caret--blink={!typing} aria-hidden="true"
 		></span>{/if}</span
 >
 
 <style>
-	/* the full line stays in the accessibility tree; the animation is decoration */
+	/*
+	 * Before typing starts (and on the server) the line is plain text, so the
+	 * markup carries it once. While typing, the full line stays in the
+	 * accessibility tree here and the animation is decoration.
+	 */
 	.crt-sr {
 		position: absolute;
 		width: 1px;

@@ -104,7 +104,8 @@ Every component also takes `class`, applied to its root element.
 | `code`       | `string`                  | `''`           | right-aligned in the title bar     |
 | `hint`       | `string`                  | `'[ESC] BACK'` | label on the back control          |
 | `footer`     | `string`                  | `''`           | right-aligned footer text          |
-| `onback`     | `() => void`              | —              | omit to render without the control |
+| `onback`     | `() => void`              | —              | runs when the control is activated |
+| `backHref`   | `string`                  | —              | renders the control as a link      |
 | `titleSpeed` | `number`                  | `26`           | ms per character                   |
 | `ontick`     | `(drawn: number) => void` | —              | forwarded to the title's `Typed`   |
 
@@ -113,6 +114,15 @@ listen for the Escape key itself. Bind it where your app handles keyboard naviga
 
 ```svelte
 <svelte:window onkeydown={(e) => e.key === 'Escape' && goBack()} />
+```
+
+With only `onback`, the control is a `<button>`. Give it `backHref` as well and it becomes an
+`<a href>` that crawlers and no-JS readers can follow; a plain click still runs `onback` instead of
+navigating, while modified clicks (new tab, new window) are left to the browser. Omit both to
+render the frame without a back control.
+
+```svelte
+<ScreenFrame title="IDENTITY" backHref="?screen=menu" onback={() => (screen = 'menu')}>
 ```
 
 ## Theming

@@ -157,7 +157,8 @@
 		</div>
 		<p class="note dim">
 			Content is a snippet; title, code, footer and the back label are plain text props. Drop
-			<code>onback</code> to render the frame without a back control.
+			<code>onback</code> to render the frame without a back control, or add
+			<code>backHref</code> to make it a real link crawlers can follow.
 		</p>
 	</section>
 

@@ -56,6 +56,16 @@ export const CASES: Case[] = [
 		}
 	},
 	{
+		name: 'ScreenFrame (backHref)',
+		component: ScreenFrame,
+		props: {
+			title: 'CAPABILITY MATRIX',
+			backHref: '?screen=menu',
+			onback: noop,
+			children: createRawSnippet(() => ({ render: () => '<p>CONTENT</p>' }))
+		}
+	},
+	{
 		name: 'Kitchen',
 		component: Kitchen,
 		props: {}

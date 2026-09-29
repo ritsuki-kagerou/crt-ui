@@ -15,8 +15,17 @@
 		hint?: string;
 		/** right-aligned footer text */
 		footer?: string;
-		/** omit to render the frame without a back control */
+		/**
+		 * Called when the back control is activated. With `backHref` it runs
+		 * in place of the link's navigation; alone, the control is a button.
+		 */
 		onback?: () => void;
+		/**
+		 * Renders the back control as a real link, so crawlers and no-JS
+		 * readers can follow it. Omit both this and `onback` to render the
+		 * frame without a back control.
+		 */
+		backHref?: string;
 		/** ms per character for the title */
 		titleSpeed?: number;
 		/** forwarded to the title's `Typed` — see its `ontick` */
@@ -31,11 +40,28 @@
 		hint = '[ESC] BACK',
 		footer = '',
 		onback,
+		backHref,
 		titleSpeed = 26,
 		ontick,
 		class: klass = '',
 		children
 	}: Props = $props();
+
+	function follow(event: MouseEvent) {
+		// leave modified clicks (new tab, new window, download) to the browser
+		if (
+			!onback ||
+			event.button !== 0 ||
+			event.metaKey ||
+			event.ctrlKey ||
+			event.shiftKey ||
+			event.altKey
+		) {
+			return;
+		}
+		event.preventDefault();
+		onback();
+	}
 </script>
 
 <section class="screen {klass}">
@@ -51,7 +77,9 @@
 
 	<hr class="screen__rule" />
 	<footer class="screen__foot">
-		{#if onback}
+		{#if backHref}
+			<a class="screen__back" href={backHref} onclick={follow}>{hint}</a>
+		{:else if onback}
 			<button class="screen__back" onclick={onback}>{hint}</button>
 		{:else}
 			<span></span>
@@ -124,10 +152,16 @@
 		cursor: pointer;
 		text-shadow: inherit;
 		color: var(--crt-phos-hot, #d5ffe6);
+		text-decoration: none;
 		transition: opacity 120ms linear;
 	}
 
 	.screen__back:hover {
 		opacity: 0.65;
+	}
+
+	.screen__back:focus-visible {
+		outline: 1px solid currentColor;
+		outline-offset: 0.25em;
 	}
 </style>
