@@ -6,6 +6,11 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 
 ## [Unreleased]
 
+### Added
+
+- `--crt-tube-glow` token (default `6%`) sets how strongly the phosphor glows behind the screen
+  in `Crt`'s vignette layer. The docs demo has a slider for it.
+
 ## [1.1.0] — 2026-09-29
 
 ### Added

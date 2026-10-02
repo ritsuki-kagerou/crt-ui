@@ -39,6 +39,7 @@
 	--crt-flicker-duration: 4.2s;
 	--crt-flicker-ink: color-mix(in srgb, var(--crt-phos) 2.5%, transparent);
 	--crt-vignette-strength: 0.55;
+	--crt-tube-glow: 6%; /* phosphor glow behind the screen, 0%–100% */
 
 	/* --- caret (Typed) ---------------------------------------------- */
 	--crt-caret-width: 0.58em;

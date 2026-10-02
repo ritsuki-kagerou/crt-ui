@@ -6,6 +6,7 @@
 	let bootDone = $state(false);
 
 	let layers = $state({ scanlines: true, sweep: true, flicker: true, vignette: true });
+	let glow = $state(6);
 
 	const BOOT_LINES = [
 		'CRT/UI — BIOS 00.01',
@@ -26,6 +27,7 @@
 		['--crt-bar', '#1ee07c', 'lit meter / progress cells'],
 		['--crt-rule', 'rgba(…, .26)', 'hairlines and borders'],
 		['--crt-display', 'var(--crt-mono)', 'display face for titles'],
+		['--crt-tube-glow', '6%', 'phosphor glow behind the screen'],
 		['--crt-sweep-duration', '7.5s', 'beam pass period'],
 		['--crt-scanline-gap', '3px', 'scanline pitch'],
 		['--crt-cell-width', '6px', 'meter cell width']
@@ -172,8 +174,20 @@
 					{key}
 				</label>
 			{/each}
+			<label class="toggle slider">
+				glow
+				<input
+					type="range"
+					min="0"
+					max="30"
+					step="1"
+					bind:value={glow}
+					disabled={!layers.vignette}
+				/>
+				<output class="dim">{glow}%</output>
+			</label>
 		</div>
-		<div class="demo__tube">
+		<div class="demo__tube" style:--crt-tube-glow="{glow}%">
 			<p class="hot">SIGNAL LOCKED</p>
 			<p class="dim">this box has its own tube, scoped with position="absolute"</p>
 			<Crt
@@ -186,7 +200,9 @@
 		</div>
 		<p class="note dim">
 			Pointer-transparent and <code>aria-hidden</code>. Mounted once in the root layout it covers
-			the viewport; with <code>position="absolute"</code> it covers the nearest positioned ancestor instead.
+			the viewport; with <code>position="absolute"</code> it covers the nearest positioned ancestor
+			instead. The glow slider sets <code>--crt-tube-glow</code> on this box; it is drawn by the vignette
+			layer.
 		</p>
 	</section>
 
@@ -284,6 +300,15 @@
 
 	.toggle input {
 		accent-color: var(--crt-bar);
+	}
+
+	.slider:has(input:disabled) {
+		opacity: 0.45;
+		cursor: default;
+	}
+
+	.slider output {
+		min-width: 3ch;
 	}
 
 	.demo__tube {

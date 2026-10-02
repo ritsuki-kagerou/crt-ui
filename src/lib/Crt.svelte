@@ -95,7 +95,8 @@
 		}
 	}
 
-	/* tube curvature + burn-in falloff */
+	/* tube curvature + burn-in falloff, over a phosphor glow whose strength
+	   is --crt-tube-glow */
 	.crt__vignette {
 		position: absolute;
 		inset: 0;
@@ -107,7 +108,7 @@
 			),
 			radial-gradient(
 				90% 70% at 50% 46%,
-				color-mix(in srgb, var(--crt-phos, #4ade80) 6%, transparent),
+				color-mix(in srgb, var(--crt-phos, #4ade80) var(--crt-tube-glow, 6%), transparent),
 				transparent 70%
 			);
 	}

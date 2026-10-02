@@ -71,6 +71,10 @@ Every component also takes `class`, applied to its root element.
 | `scanlines` / `sweep` / `flicker` / `vignette` | `boolean`               | `true`    |
 | `position`                                     | `'fixed' \| 'absolute'` | `'fixed'` |
 
+How bright the phosphor glows behind the screen is a token, not a prop: set `--crt-tube-glow`
+(default `6%`, `0%` turns it off). The glow is drawn by the vignette layer, so it goes away with
+`vignette={false}`.
+
 ### `Meter`
 
 | Prop      | Type      | Default | Notes                           |
