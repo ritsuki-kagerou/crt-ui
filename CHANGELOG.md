@@ -6,6 +6,8 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-10-02
+
 ### Added
 
 - `--crt-tube-glow` token (default `6%`) sets how strongly the phosphor glows behind the screen
@@ -44,7 +46,8 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 First release: `Crt`, `Typed`, `Boot`, `Meter` and `ScreenFrame`, themed through the `--crt-*`
 tokens in `tokens.css`, with deterministic SSR output and hydration covered by tests.
 
-[Unreleased]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/ritsuki-kagerou/crt-ui/releases/tag/v1.0.0
