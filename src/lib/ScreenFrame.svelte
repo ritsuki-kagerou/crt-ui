@@ -113,7 +113,7 @@
 	.screen__code {
 		font-size: 0.9em;
 		letter-spacing: 0.16em;
-		color: var(--crt-phos-dim, rgba(74, 222, 128, 0.4));
+		color: var(--crt-phos-mid, rgba(74, 222, 128, 0.62));
 	}
 
 	.screen__rule {
@@ -138,7 +138,7 @@
 	}
 
 	.screen__footer-text {
-		color: var(--crt-phos-dim, rgba(74, 222, 128, 0.4));
+		color: var(--crt-phos-mid, rgba(74, 222, 128, 0.62));
 	}
 
 	.screen__back {

@@ -162,17 +162,18 @@
 		margin: 0;
 		font-size: 0.88em;
 		letter-spacing: 0.2em;
-		color: var(--crt-phos-dim, rgba(74, 222, 128, 0.4));
+		color: var(--crt-phos-hot, #d5ffe6);
 		animation: crt-boot-pulse 1.4s ease-in-out infinite;
 	}
 
 	@keyframes crt-boot-pulse {
+		/* the dimmest point still clears 4.5:1 on black */
 		0%,
 		100% {
-			opacity: 0.35;
+			opacity: 0.55;
 		}
 		50% {
-			opacity: 0.9;
+			opacity: 1;
 		}
 	}
 
