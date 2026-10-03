@@ -2,10 +2,11 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createRawSnippet } from 'svelte';
 
-import { Crt, Meter, Typed, Boot, ScreenFrame } from '$lib/index.js';
+import { Boot, Button, Crt, Input, Meter, ScreenFrame, Select, Typed } from '$lib/index.js';
 import Kitchen from './fixtures/Kitchen.svelte';
 
 const noop = () => {};
+const text = (t: string) => createRawSnippet(() => ({ render: () => `<span>${t}</span>` }));
 
 export type Case = {
 	name: string;
@@ -66,6 +67,68 @@ export const CASES: Case[] = [
 		}
 	},
 	{
+		name: 'Button',
+		component: Button,
+		props: { onclick: noop, children: text('EXECUTE') }
+	},
+	{
+		name: 'Button (solid, disabled)',
+		component: Button,
+		props: { variant: 'solid', disabled: true, children: text('EXECUTE') }
+	},
+	{
+		name: 'Button (href)',
+		component: Button,
+		props: { href: '/docs', children: text('READ THE DOCS') }
+	},
+	{
+		name: 'Button (href, disabled)',
+		component: Button,
+		props: { href: '/docs', disabled: true, children: text('READ THE DOCS') }
+	},
+	// `$props.id()` differs between a fresh client mount and the server, so the
+	// field cases pin `id`; generated ids are covered by the e2e hydration test
+	{
+		name: 'Input',
+		component: Input,
+		props: { id: 'callsign', label: 'CALLSIGN', value: 'RK-9000', placeholder: 'ENTER' }
+	},
+	{
+		name: 'Input (hint, error)',
+		component: Input,
+		props: {
+			id: 'freq',
+			label: 'FREQUENCY',
+			hint: 'MHZ, 88–108',
+			error: 'OUT OF BAND',
+			prompt: '',
+			type: 'number'
+		}
+	},
+	{
+		name: 'Select',
+		component: Select,
+		props: {
+			id: 'phosphor',
+			label: 'PHOSPHOR',
+			options: ['GREEN', { value: 'amber', label: 'AMBER' }, { value: 'white', disabled: true }],
+			value: 'amber'
+		}
+	},
+	{
+		name: 'Select (placeholder, error)',
+		component: Select,
+		props: {
+			id: 'sector',
+			label: 'SECTOR',
+			options: ['01', '02'],
+			placeholder: 'CHOOSE',
+			hint: 'TWO SECTORS ONLINE',
+			error: 'REQUIRED',
+			required: true
+		}
+	},
+	{
 		name: 'Kitchen',
 		component: Kitchen,
 		props: {}
@@ -73,7 +136,9 @@ export const CASES: Case[] = [
 ];
 
 export function normalize(html: string): string {
-	return sortAttributes(html.replace(/<!--[\s\S]*?-->/g, '').replace(/\s+/g, ' ')).trim();
+	// `innerHTML` escapes `>` in text; the server leaves it bare
+	const unescaped = html.replace(/&gt;/g, '>');
+	return sortAttributes(unescaped.replace(/<!--[\s\S]*?-->/g, '').replace(/\s+/g, ' ')).trim();
 }
 
 const START_TAG = /<([a-zA-Z][a-zA-Z0-9-]*)((?:\s+[^\s=/>]+(?:="[^"]*")?)*)\s*\/?>/g;

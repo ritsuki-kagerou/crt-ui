@@ -23,6 +23,7 @@
 	--crt-phos-faint: color-mix(in srgb, var(--crt-phos) 16%, transparent);
 	--crt-rule: color-mix(in srgb, var(--crt-phos) 26%, transparent);
 	--crt-glow: color-mix(in srgb, var(--crt-bar) 50%, transparent);
+	--crt-alert: #ff6b5e; /* error text and borders (Input, Select) */
 
 	/* --- type ------------------------------------------------------- */
 	--crt-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;

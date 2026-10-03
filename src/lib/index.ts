@@ -10,3 +10,6 @@ export { default as Typed } from './Typed.svelte';
 export { default as Meter } from './Meter.svelte';
 export { default as Boot } from './Boot.svelte';
 export { default as ScreenFrame } from './ScreenFrame.svelte';
+export { default as Button } from './Button.svelte';
+export { default as Input } from './Input.svelte';
+export { default as Select, type SelectOption } from './Select.svelte';

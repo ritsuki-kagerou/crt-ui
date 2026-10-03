@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 const HYDRATION_CODES = [
 	'hydration_mismatch',
@@ -131,5 +132,115 @@ test.describe('theming', () => {
 		for (const key of Object.keys(green) as (keyof typeof green)[]) {
 			expect(amber[key], `${key} did not follow the phosphor tokens`).not.toBe(green[key]);
 		}
+	});
+});
+
+test.describe('form components', () => {
+	test('keep their server-rendered ids and state through hydration', async ({
+		page,
+		request,
+		baseURL
+	}) => {
+		const markup = body(await (await request.get(baseURL!)).text());
+		const serverIds = [...markup.matchAll(/<(?:input|select)[^>]*\sid="([^"]+)"/g)].map(
+			(m) => m[1]
+		);
+		expect(serverIds).toHaveLength(4);
+		expect(new Set(serverIds).size).toBe(4);
+
+		await page.goto('/');
+		await expect(page.getByTestId('boot-state')).toHaveText('DONE');
+
+		const clientIds = await page
+			.locator('[data-testid="form"] :is(input, select)')
+			.evaluateAll((els) => els.map((el) => el.id));
+		expect(clientIds).toEqual(serverIds);
+
+		await expect(page.getByTestId('form-state')).toHaveText('RK|amber||0');
+		await expect(page.getByLabel('PHOSPHOR')).toHaveValue('amber');
+		await expect(page.getByLabel('SECTOR')).toHaveValue('');
+	});
+
+	test('work after hydration', async ({ page }) => {
+		await page.goto('/');
+		await expect(page.getByTestId('boot-state')).toHaveText('DONE');
+
+		await page.getByLabel('CALLSIGN').fill('RK-9000');
+		await page.getByLabel('PHOSPHOR').selectOption('green');
+		await page.getByLabel('SECTOR').selectOption('02');
+		await page.getByRole('button', { name: 'EXECUTE' }).click();
+		await expect(page.getByTestId('form-state')).toHaveText('RK-9000|green|02|1');
+
+		await expect(page.getByLabel('CALLSIGN')).toHaveAccessibleDescription('UP TO 8 CHARACTERS');
+		await expect(page.getByLabel('PASSWORD')).toHaveAttribute('aria-invalid', 'true');
+		await expect(page.getByLabel('PASSWORD')).toHaveAccessibleDescription('TOO SHORT');
+		await expect(page.getByRole('button', { name: 'OFFLINE' })).toBeDisabled();
+	});
+
+	test('theme the open select list where the browser allows it', async ({ page }) => {
+		await page.goto('/');
+		await expect(page.getByTestId('boot-state')).toHaveText('DONE');
+
+		const select = page.getByLabel('PHOSPHOR');
+		const supported = await page.evaluate(() => CSS.supports('appearance', 'base-select'));
+		test.skip(!supported, 'this browser has no customizable select');
+
+		await expect(select).toHaveCSS('appearance', 'base-select');
+		await select.click();
+		const green = page.getByRole('option', { name: 'green' });
+		await expect(green).toBeVisible();
+		await green.hover();
+
+		const look = await page.evaluate(() => {
+			const s = document.querySelector('[data-testid="form"] select')!;
+			const picker = getComputedStyle(s, '::picker(select)');
+			const option = [...s.querySelectorAll('option')].find((o) => o.value === 'green')!;
+			return {
+				pickerBg: picker.backgroundColor,
+				optionBg: getComputedStyle(option).backgroundColor
+			};
+		});
+		expect(look.pickerBg).toBe('rgb(0, 0, 0)');
+		// hovered option lights up in --crt-bar (#1ee07c)
+		expect(look.optionBg).toBe('rgb(30, 224, 124)');
+
+		await green.click();
+		await expect(page.getByTestId('form-state')).toContainText('|green|');
+	});
+
+	test('reach every control with the keyboard', async ({ page }) => {
+		await page.goto('/');
+		await expect(page.getByTestId('boot-state')).toHaveText('DONE');
+
+		await page.getByLabel('CALLSIGN').focus();
+		const order: string[] = [];
+		for (let i = 0; i < 5; i++) {
+			await page.keyboard.press('Tab');
+			order.push(
+				await page.evaluate(
+					() => document.activeElement?.id || document.activeElement?.textContent?.trim() || ''
+				)
+			);
+		}
+		const ids = await page
+			.locator('[data-testid="form"] :is(input, select)')
+			.evaluateAll((els) => els.map((el) => el.id));
+		// the disabled button is skipped
+		expect(order).toEqual([ids[1], ids[2], ids[3], 'EXECUTE', 'READ THE DOCS']);
+	});
+});
+
+test.describe('accessibility (axe, real browser)', () => {
+	test('the page has no WCAG A/AA violations, colour contrast included', async ({ page }) => {
+		await page.goto('/');
+		await expect(page.getByTestId('boot-state')).toHaveText('DONE');
+
+		const { violations } = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+
+		expect(
+			violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)
+		).toEqual([]);
 	});
 });

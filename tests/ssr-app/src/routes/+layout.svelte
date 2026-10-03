@@ -4,6 +4,10 @@
 	let { children } = $props();
 </script>
 
+<svelte:head>
+	<title>crt-ui SSR test app</title>
+</svelte:head>
+
 {@render children()}
 
 <style>

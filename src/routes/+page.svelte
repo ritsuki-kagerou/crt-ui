@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Boot, Crt, Meter, ScreenFrame, Typed } from '$lib/index.js';
+	import { Boot, Button, Crt, Input, Meter, ScreenFrame, Select, Typed } from '$lib/index.js';
 
 	let typedRun = $state(0);
 	let bootRun = $state(0);
@@ -7,6 +7,11 @@
 
 	let layers = $state({ scanlines: true, sweep: true, flicker: true, vignette: true });
 	let glow = $state(6);
+
+	let callsign = $state('');
+	let phosphor = $state('green');
+	let transmitted = $state('');
+	let callsignError = $derived(callsign.length > 8 ? 'MAX 8 CHARACTERS' : undefined);
 
 	const BOOT_LINES = [
 		'CRT/UI — BIOS 00.01',
@@ -21,11 +26,12 @@
 		['--crt-bg', '#000000', 'page / tube background'],
 		['--crt-phos', '#4ade80', 'base phosphor colour'],
 		['--crt-phos-hot', '#d5ffe6', 'emphasis (titles, values)'],
-		['--crt-phos-mid', 'rgba(…, .62)', 'secondary text'],
-		['--crt-phos-dim', 'rgba(…, .4)', 'labels, footers'],
+		['--crt-phos-mid', 'rgba(…, .62)', 'secondary text, labels, footers'],
+		['--crt-phos-dim', 'rgba(…, .4)', 'decorative text in your app'],
 		['--crt-phos-faint', 'rgba(…, .16)', 'unlit meter cells'],
 		['--crt-bar', '#1ee07c', 'lit meter / progress cells'],
 		['--crt-rule', 'rgba(…, .26)', 'hairlines and borders'],
+		['--crt-alert', '#ff6b5e', 'error text and borders'],
 		['--crt-display', 'var(--crt-mono)', 'display face for titles'],
 		['--crt-tube-glow', '6%', 'phosphor glow behind the screen'],
 		['--crt-sweep-duration', '7.5s', 'beam pass period'],
@@ -38,7 +44,7 @@
 	<title>crt-ui — CRT terminal components for Svelte 5</title>
 	<meta
 		name="description"
-		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame."
+		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame, Button, Input, Select."
 	/>
 	<link rel="canonical" href="https://crt-ui.ritsuki.dev/" />
 
@@ -48,7 +54,7 @@
 	<meta property="og:title" content="crt-ui — CRT terminal components for Svelte 5" />
 	<meta
 		property="og:description"
-		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame."
+		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame, Button, Input, Select."
 	/>
 	<meta property="og:url" content="https://crt-ui.ritsuki.dev/" />
 	<meta property="og:image" content="https://crt-ui.ritsuki.dev/og.png" />
@@ -165,6 +171,48 @@
 	</section>
 
 	<section class="demo">
+		<h2 class="label">Button · Input · Select</h2>
+		<hr class="rule" />
+		<form
+			class="demo__stage demo__stage--form"
+			onsubmit={(e) => {
+				e.preventDefault();
+				if (!callsignError) transmitted = `${callsign || 'ANON'} ON ${phosphor.toUpperCase()}`;
+			}}
+		>
+			<Input
+				label="Callsign"
+				bind:value={callsign}
+				placeholder="RK-9000"
+				hint="UP TO 8 CHARACTERS"
+				error={callsignError}
+			/>
+			<Select
+				label="Phosphor"
+				options={[
+					{ value: 'green', label: 'P1 GREEN' },
+					{ value: 'amber', label: 'P3 AMBER' },
+					{ value: 'white', label: 'P4 WHITE', disabled: true }
+				]}
+				bind:value={phosphor}
+			/>
+			<div class="form-actions">
+				<Button type="submit" variant="solid">TRANSMIT</Button>
+				<Button onclick={() => ((callsign = ''), (transmitted = ''))}>CLEAR</Button>
+				<Button disabled>OFFLINE</Button>
+			</div>
+			<p class="hot" aria-live="polite">{transmitted && `> TRANSMITTED: ${transmitted}`}</p>
+		</form>
+		<p class="note dim">
+			Native <code>&lt;button&gt;</code>, <code>&lt;input&gt;</code> and <code>&lt;select&gt;</code>
+			underneath, so keyboard, touch and screen readers work as the platform intends. Labels are always
+			visible; <code>hint</code> and <code>error</code> are linked with
+			<code>aria-describedby</code>. Use <code>bind:value</code>; any other attribute passes
+			through. Give <code>Button</code> an <code>href</code> to render a link.
+		</p>
+	</section>
+
+	<section class="demo">
 		<h2 class="label">Crt</h2>
 		<hr class="rule" />
 		<div class="demo__toggles">
@@ -274,6 +322,17 @@
 
 	.demo__stage--frame {
 		--crt-screen-min-height: 0;
+	}
+
+	.demo__stage--form {
+		gap: 1rem;
+		max-width: 28rem;
+	}
+
+	.form-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
 	}
 
 	.frame-list {

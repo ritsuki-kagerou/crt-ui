@@ -5,7 +5,7 @@ CRT terminal components for Svelte 5 — SSR-safe, token-driven, reduced-motion 
 Every retro-terminal UI ends up rewriting the same five pieces: a typewriter effect that
 breaks hydration, a scanline overlay that eats pointer events, a segmented meter, a boot
 sequence, and the chrome around a screen. This package is those five pieces, extracted from
-a real site and given an API.
+a real site and given an API, plus the form controls a terminal UI needs around them.
 
 ## Install
 
@@ -54,6 +54,9 @@ The components are written in runes mode and use Svelte 5 APIs only: events are 
 | `Meter`       | Segmented bar readout driven by a 0–1 fraction.                          |
 | `Boot`        | A POST-style boot log that chains lines, then a stepped progress bar.    |
 | `ScreenFrame` | Chrome around one screen: typed title, sector code, rules, back control. |
+| `Button`      | Native button (or link with `href`), outline or solid.                   |
+| `Input`       | Labelled text field behind a prompt, with hint and error text.           |
+| `Select`      | Labelled native select in the same frame as `Input`.                     |
 
 Every component also takes `class`, applied to its root element.
 
@@ -133,6 +136,69 @@ render the frame without a back control.
 <ScreenFrame title="IDENTITY" backHref="?screen=menu" onback={() => (screen = 'menu')}>
 ```
 
+### `Button`
+
+| Prop       | Type                      | Default     | Notes                                     |
+| ---------- | ------------------------- | ----------- | ----------------------------------------- |
+| `children` | `Snippet`                 | —           | required; the label                       |
+| `variant`  | `'outline' \| 'solid'`    | `'outline'` | `solid` for the one primary action        |
+| `href`     | `string`                  | —           | renders an `<a>` instead of a `<button>`  |
+| `type`     | `'button' \| 'submit' …`  | `'button'`  | not `'submit'` by default, unlike HTML    |
+| `disabled` | `boolean`                 | `false`     | on a link: removes `href`, ignores clicks |
+| `onclick`  | `(e: MouseEvent) => void` | —           |                                           |
+
+Any other `<button>` attribute (`name`, `form`, `aria-*`, …) is passed through.
+
+```svelte
+<Button variant="solid" type="submit">TRANSMIT</Button>
+<Button href="/docs">READ THE DOCS</Button>
+```
+
+### `Input`
+
+| Prop     | Type     | Default | Notes                                           |
+| -------- | -------- | ------- | ----------------------------------------------- |
+| `label`  | `string` | —       | required; always visible                        |
+| `value`  | `string` | `''`    | use `bind:value`                                |
+| `hint`   | `string` | —       | help text, linked with `aria-describedby`       |
+| `error`  | `string` | —       | error text; also sets `aria-invalid`            |
+| `prompt` | `string` | `'>'`   | decorative prefix, hidden from screen readers   |
+| `id`     | `string` | auto    | generated with `$props.id()`, stable across SSR |
+
+Any other `<input>` attribute (`type`, `name`, `placeholder`, `required`, `autocomplete`, …)
+is passed through. `value` is a string, so use it with text-like types (`text`, `email`,
+`password`, `search`, `url`, `tel`). `class` goes on the wrapper.
+
+### `Select`
+
+| Prop          | Type             | Default | Notes                                               |
+| ------------- | ---------------- | ------- | --------------------------------------------------- |
+| `label`       | `string`         | —       | required; always visible                            |
+| `options`     | `SelectOption[]` | —       | required; strings or `{ value, label?, disabled? }` |
+| `value`       | `string`         | `''`    | use `bind:value`                                    |
+| `placeholder` | `string`         | —       | disabled first option shown while `value` is `''`   |
+| `hint`        | `string`         | —       | as on `Input`                                       |
+| `error`       | `string`         | —       | as on `Input`                                       |
+| `id`          | `string`         | auto    | as on `Input`                                       |
+
+A native `<select>`, so the platform handles keyboard, touch and screen readers. Any other
+`<select>` attribute is passed through; `multiple` is not supported. `SelectOption` is exported
+as a type.
+
+The open list is themed too in browsers with customizable selects (`appearance: base-select`,
+Chrome/Edge 135 and later). Other browsers show their own popup; the closed field looks the same
+everywhere.
+
+```svelte
+<script lang="ts">
+	let callsign = $state('');
+	let phosphor = $state('green');
+</script>
+
+<Input label="Callsign" bind:value={callsign} hint="UP TO 8 CHARACTERS" />
+<Select label="Phosphor" options={['green', 'amber']} bind:value={phosphor} />
+```
+
 ## Theming
 
 Import `@ritsuki.kagerou/crt-ui/tokens.css` once, then override any `--crt-*` custom property —
@@ -157,40 +223,41 @@ you re-skin a single subtree instead, set the shades you need on that ancestor a
 Every component carries the same defaults inline, so skipping `tokens.css` and declaring
 the tokens yourself works too.
 
-| Token                     | Default                           | Used by                        |
-| ------------------------- | --------------------------------- | ------------------------------ |
-| `--crt-bg`                | `#000000`                         | —                              |
-| `--crt-phos`              | `#4ade80`                         | `Crt`, derived shades          |
-| `--crt-phos-hot`          | `#d5ffe6`                         | all but `Typed`                |
-| `--crt-bar`               | `#1ee07c`                         | `Meter`, `Boot`                |
-| `--crt-phos-mid`          | 62% of `--crt-phos`               | `Meter`, `Boot`                |
-| `--crt-phos-dim`          | 40% of `--crt-phos`               | `Boot`, `ScreenFrame`          |
-| `--crt-phos-faint`        | 16% of `--crt-phos`               | `Meter`, `Boot`                |
-| `--crt-rule`              | 26% of `--crt-phos`               | `ScreenFrame`                  |
-| `--crt-glow`              | 50% of `--crt-bar`                | `Meter`, `Boot`                |
-| `--crt-mono`              | `ui-monospace, …, monospace`      | —                              |
-| `--crt-display`           | `var(--crt-mono)`                 | `Meter`, `Boot`, `ScreenFrame` |
-| `--crt-tracking`          | `0.12em`                          | —                              |
-| `--crt-z`                 | `90`                              | `Crt`                          |
-| `--crt-scanline-gap`      | `3px`                             | `Crt`                          |
-| `--crt-scanline-ink`      | `rgba(0, 0, 0, 0.26)`             | `Crt`                          |
-| `--crt-scanline-opacity`  | `0.6`                             | `Crt`                          |
-| `--crt-sweep-height`      | `42vh`                            | `Crt`                          |
-| `--crt-sweep-duration`    | `7.5s`                            | `Crt`                          |
-| `--crt-flicker-duration`  | `4.2s`                            | `Crt`                          |
-| `--crt-flicker-ink`       | 2.5% of `--crt-phos`              | `Crt`                          |
-| `--crt-vignette-strength` | `0.55`                            | `Crt`                          |
-| `--crt-tube-glow`         | `6%`                              | `Crt`                          |
-| `--crt-caret-width`       | `0.58em`                          | `Typed`                        |
-| `--crt-caret-height`      | `1.02em`                          | `Typed`                        |
-| `--crt-caret-blink`       | `1.06s`                           | `Typed`                        |
-| `--crt-cell-width`        | `6px`                             | `Meter`                        |
-| `--crt-cell-height`       | `12px`                            | `Meter`                        |
-| `--crt-cell-gap`          | `2px`                             | `Meter`                        |
-| `--crt-screen-min-height` | `46vh` (not declared in the file) | `ScreenFrame`                  |
+| Token                     | Default                           | Used by                                      |
+| ------------------------- | --------------------------------- | -------------------------------------------- |
+| `--crt-bg`                | `#000000`                         | `Button`, `Select`                           |
+| `--crt-phos`              | `#4ade80`                         | `Crt`, `Input`, `Select`, derived shades     |
+| `--crt-phos-hot`          | `#d5ffe6`                         | all but `Typed`                              |
+| `--crt-bar`               | `#1ee07c`                         | `Meter`, `Boot`, `Button`, `Input`           |
+| `--crt-phos-mid`          | 62% of `--crt-phos`               | all but `Typed`, `Crt`                       |
+| `--crt-phos-dim`          | 40% of `--crt-phos`               | —                                            |
+| `--crt-phos-faint`        | 16% of `--crt-phos`               | `Meter`, `Boot`                              |
+| `--crt-rule`              | 26% of `--crt-phos`               | `ScreenFrame`, `Input`, `Select`             |
+| `--crt-glow`              | 50% of `--crt-bar`                | `Meter`, `Boot`, `Button`, `Input`, `Select` |
+| `--crt-alert`             | `#ff6b5e`                         | `Input`, `Select`                            |
+| `--crt-mono`              | `ui-monospace, …, monospace`      | —                                            |
+| `--crt-display`           | `var(--crt-mono)`                 | all but `Typed`, `Crt`                       |
+| `--crt-tracking`          | `0.12em`                          | —                                            |
+| `--crt-z`                 | `90`                              | `Crt`                                        |
+| `--crt-scanline-gap`      | `3px`                             | `Crt`                                        |
+| `--crt-scanline-ink`      | `rgba(0, 0, 0, 0.26)`             | `Crt`                                        |
+| `--crt-scanline-opacity`  | `0.6`                             | `Crt`                                        |
+| `--crt-sweep-height`      | `42vh`                            | `Crt`                                        |
+| `--crt-sweep-duration`    | `7.5s`                            | `Crt`                                        |
+| `--crt-flicker-duration`  | `4.2s`                            | `Crt`                                        |
+| `--crt-flicker-ink`       | 2.5% of `--crt-phos`              | `Crt`                                        |
+| `--crt-vignette-strength` | `0.55`                            | `Crt`                                        |
+| `--crt-tube-glow`         | `6%`                              | `Crt`                                        |
+| `--crt-caret-width`       | `0.58em`                          | `Typed`                                      |
+| `--crt-caret-height`      | `1.02em`                          | `Typed`                                      |
+| `--crt-caret-blink`       | `1.06s`                           | `Typed`                                      |
+| `--crt-cell-width`        | `6px`                             | `Meter`                                      |
+| `--crt-cell-height`       | `12px`                            | `Meter`                                      |
+| `--crt-cell-gap`          | `2px`                             | `Meter`                                      |
+| `--crt-screen-min-height` | `46vh` (not declared in the file) | `ScreenFrame`                                |
 
-`--crt-bg`, `--crt-mono` and `--crt-tracking` are declared for your app to use; no component
-reads them directly. Source: [`src/lib/tokens.css`](src/lib/tokens.css).
+`--crt-phos-dim`, `--crt-mono` and `--crt-tracking` are declared for your app to use; no
+component reads them directly. Source: [`src/lib/tokens.css`](src/lib/tokens.css).
 
 `color-mix()` needs Chrome/Edge 111, Safari 16.2 or Firefox 113 and later.
 
