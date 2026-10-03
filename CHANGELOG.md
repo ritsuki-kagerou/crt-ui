@@ -6,6 +6,31 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-10-04
+
+### Added
+
+- `Button`: a native `<button>`, or an `<a>` with `href`. `variant` is `outline` (default) or
+  `solid`; `type` defaults to `button`. A disabled link drops its `href` and ignores clicks.
+- `Input`: a labelled text field behind a decorative prompt, with `bind:value`, `hint` and
+  `error`. Both texts are linked with `aria-describedby`; `error` also sets `aria-invalid`.
+- `Select`: a labelled native `<select>` in the same frame, taking strings or
+  `{ value, label, disabled }` objects, with an optional `placeholder`. `SelectOption` is
+  exported as a type. In Chrome/Edge 135+ the open list is themed as well, through
+  `appearance: base-select`; other browsers keep their native popup.
+- `Input` and `Select` generate their `id` with `$props.id()`, so it survives SSR and hydration.
+  Any other native attribute is passed through on all three components.
+- `--crt-alert` token (default `#ff6b5e`) for error text and borders.
+- Automated accessibility tests: axe (WCAG 2.1 A/AA) on every component in jsdom, and on the
+  whole test app in Chromium with colour contrast included.
+
+### Fixed
+
+- Text that failed WCAG AA contrast on the default black background is brighter: the
+  `ScreenFrame` code and footer text now use `--crt-phos-mid` instead of `--crt-phos-dim`, and
+  `Boot`'s "press any key" hint uses `--crt-phos-hot` and pulses between 55% and 100% opacity
+  instead of 35% and 90%.
+
 ## [1.2.1] — 2026-10-04
 
 ### Documentation
@@ -54,7 +79,8 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 First release: `Crt`, `Typed`, `Boot`, `Meter` and `ScreenFrame`, themed through the `--crt-*`
 tokens in `tokens.css`, with deterministic SSR output and hydration covered by tests.
 
-[Unreleased]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.0.1...v1.1.0
