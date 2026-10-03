@@ -15,6 +15,10 @@ pnpm add @ritsuki.kagerou/crt-ui
 
 Svelte 5 is a peer dependency. No runtime dependencies.
 
+The components are written in runes mode and use Svelte 5 APIs only: events are callback props
+(`ondone`, `onback`, `oncomplete`), not `on:` directives, and `ScreenFrame`'s content is a
+`children` snippet, not a slot. Svelte 4 syntax will not work.
+
 ## Use
 
 ```svelte
@@ -151,7 +155,42 @@ everything. The derived tokens are computed where `tokens.css` declares them, on
 you re-skin a single subtree instead, set the shades you need on that ancestor as well.
 
 Every component carries the same defaults inline, so skipping `tokens.css` and declaring
-the tokens yourself works too. Full list: [`src/lib/tokens.css`](src/lib/tokens.css).
+the tokens yourself works too.
+
+| Token                     | Default                           | Used by                        |
+| ------------------------- | --------------------------------- | ------------------------------ |
+| `--crt-bg`                | `#000000`                         | —                              |
+| `--crt-phos`              | `#4ade80`                         | `Crt`, derived shades          |
+| `--crt-phos-hot`          | `#d5ffe6`                         | all but `Typed`                |
+| `--crt-bar`               | `#1ee07c`                         | `Meter`, `Boot`                |
+| `--crt-phos-mid`          | 62% of `--crt-phos`               | `Meter`, `Boot`                |
+| `--crt-phos-dim`          | 40% of `--crt-phos`               | `Boot`, `ScreenFrame`          |
+| `--crt-phos-faint`        | 16% of `--crt-phos`               | `Meter`, `Boot`                |
+| `--crt-rule`              | 26% of `--crt-phos`               | `ScreenFrame`                  |
+| `--crt-glow`              | 50% of `--crt-bar`                | `Meter`, `Boot`                |
+| `--crt-mono`              | `ui-monospace, …, monospace`      | —                              |
+| `--crt-display`           | `var(--crt-mono)`                 | `Meter`, `Boot`, `ScreenFrame` |
+| `--crt-tracking`          | `0.12em`                          | —                              |
+| `--crt-z`                 | `90`                              | `Crt`                          |
+| `--crt-scanline-gap`      | `3px`                             | `Crt`                          |
+| `--crt-scanline-ink`      | `rgba(0, 0, 0, 0.26)`             | `Crt`                          |
+| `--crt-scanline-opacity`  | `0.6`                             | `Crt`                          |
+| `--crt-sweep-height`      | `42vh`                            | `Crt`                          |
+| `--crt-sweep-duration`    | `7.5s`                            | `Crt`                          |
+| `--crt-flicker-duration`  | `4.2s`                            | `Crt`                          |
+| `--crt-flicker-ink`       | 2.5% of `--crt-phos`              | `Crt`                          |
+| `--crt-vignette-strength` | `0.55`                            | `Crt`                          |
+| `--crt-tube-glow`         | `6%`                              | `Crt`                          |
+| `--crt-caret-width`       | `0.58em`                          | `Typed`                        |
+| `--crt-caret-height`      | `1.02em`                          | `Typed`                        |
+| `--crt-caret-blink`       | `1.06s`                           | `Typed`                        |
+| `--crt-cell-width`        | `6px`                             | `Meter`                        |
+| `--crt-cell-height`       | `12px`                            | `Meter`                        |
+| `--crt-cell-gap`          | `2px`                             | `Meter`                        |
+| `--crt-screen-min-height` | `46vh` (not declared in the file) | `ScreenFrame`                  |
+
+`--crt-bg`, `--crt-mono` and `--crt-tracking` are declared for your app to use; no component
+reads them directly. Source: [`src/lib/tokens.css`](src/lib/tokens.css).
 
 `color-mix()` needs Chrome/Edge 111, Safari 16.2 or Firefox 113 and later.
 
