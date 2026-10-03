@@ -8,8 +8,35 @@
 	let layers = $state({ scanlines: true, sweep: true, flicker: true, vignette: true });
 	let glow = $state(6);
 
+	const THEMES = [
+		{ id: 'green', label: 'P1 GREEN', tokens: {} },
+		{
+			id: 'amber',
+			label: 'P3 AMBER',
+			tokens: { '--crt-phos': '#ffb000', '--crt-phos-hot': '#fff0c9', '--crt-bar': '#ffc23d' }
+		}
+	] as const;
+	const THEME_TOKENS = ['--crt-phos', '--crt-phos-hot', '--crt-bar'];
+
+	let themeId = $state<(typeof THEMES)[number]['id']>('green');
+	let theme = $derived(THEMES.find((t) => t.id === themeId)!);
+	let themeCss = $derived(
+		Object.keys(theme.tokens).length
+			? `:root {\n${Object.entries(theme.tokens)
+					.map(([k, v]) => `  ${k}: ${v};`)
+					.join('\n')}\n}`
+			: '/* the defaults in tokens.css */'
+	);
+
+	// tokens are re-skinned on :root, where tokens.css derives the shades
+	$effect(() => {
+		const root = document.documentElement.style;
+		for (const name of THEME_TOKENS) root.removeProperty(name);
+		for (const [name, value] of Object.entries(theme.tokens)) root.setProperty(name, value);
+	});
+
 	let callsign = $state('');
-	let phosphor = $state('green');
+	let channel = $state('relay');
 	let transmitted = $state('');
 	let callsignError = $derived(callsign.length > 8 ? 'MAX 8 CHARACTERS' : undefined);
 
@@ -73,6 +100,17 @@
 		<p class="head__tag dim">
 			CRT terminal components for Svelte 5 — SSR-safe, token-driven, reduced-motion aware.
 		</p>
+		<div class="themes" role="group" aria-label="Phosphor theme">
+			<span class="label">Theme</span>
+			{#each THEMES as t (t.id)}
+				<Button
+					variant={themeId === t.id ? 'solid' : 'outline'}
+					aria-pressed={themeId === t.id}
+					onclick={() => (themeId = t.id)}>{t.label}</Button
+				>
+			{/each}
+		</div>
+		<pre class="themes__css">{themeCss}</pre>
 		<hr class="rule" />
 		<pre>pnpm add @ritsuki.kagerou/crt-ui</pre>
 		<pre>{`<script>
@@ -177,7 +215,7 @@
 			class="demo__stage demo__stage--form"
 			onsubmit={(e) => {
 				e.preventDefault();
-				if (!callsignError) transmitted = `${callsign || 'ANON'} ON ${phosphor.toUpperCase()}`;
+				if (!callsignError) transmitted = `${callsign || 'ANON'} ON ${channel.toUpperCase()}`;
 			}}
 		>
 			<Input
@@ -188,13 +226,13 @@
 				error={callsignError}
 			/>
 			<Select
-				label="Phosphor"
+				label="Channel"
 				options={[
-					{ value: 'green', label: 'P1 GREEN' },
-					{ value: 'amber', label: 'P3 AMBER' },
-					{ value: 'white', label: 'P4 WHITE', disabled: true }
+					{ value: 'archive', label: 'CH-01 ARCHIVE' },
+					{ value: 'relay', label: 'CH-02 RELAY' },
+					{ value: 'deep', label: 'CH-03 DEEP SPACE', disabled: true }
 				]}
-				bind:value={phosphor}
+				bind:value={channel}
 			/>
 			<div class="form-actions">
 				<Button type="submit" variant="solid">TRANSMIT</Button>
@@ -295,6 +333,17 @@
 		max-width: 60ch;
 	}
 
+	.themes {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.themes__css {
+		font-size: 0.9em;
+	}
+
 	.demo {
 		display: grid;
 		gap: 0.9rem;
@@ -379,7 +428,7 @@
 		text-align: center;
 		min-height: 11rem;
 		border: 1px solid var(--crt-rule);
-		background: #010401;
+		background: color-mix(in srgb, var(--crt-phos) 1.5%, var(--crt-bg));
 	}
 
 	.tokens {
