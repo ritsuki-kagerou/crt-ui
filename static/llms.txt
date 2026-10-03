@@ -1,0 +1,50 @@
+# crt-ui
+
+> CRT terminal components for Svelte 5 (`@ritsuki.kagerou/crt-ui`): Crt, Typed, Boot, Meter, ScreenFrame. SSR-safe, themed with `--crt-*` CSS custom properties, reduced-motion aware. No runtime dependencies.
+
+Svelte 5 only. Components use runes; events are callback props (`ondone`, `onback`, `oncomplete`, `ontick`), not `on:` directives; `ScreenFrame` content is a `children` snippet, not a slot. Every component also takes `class`. Colours, timing and geometry are tokens, not props.
+
+```svelte
+<script lang="ts">
+	import '@ritsuki.kagerou/crt-ui/tokens.css';
+	import { Boot, Crt, Meter, ScreenFrame, Typed } from '@ritsuki.kagerou/crt-ui';
+	let booted = $state(false);
+</script>
+
+{#if !booted}
+	<Boot lines={['RK/OS — BIOS 04.71', 'MEMORY CHECK ... OK']} ondone={() => (booted = true)} />
+{:else}
+	<ScreenFrame title="CAPABILITY MATRIX" code="SECTOR 02/05" onback={() => (booted = false)}>
+		<p><Typed text="BACKEND & API" speed={18} /></p>
+		<Meter value={1} label="PRIMARY" />
+	</ScreenFrame>
+{/if}
+<Crt />
+```
+
+## Props
+
+- `Typed`: `text: string` (required), `speed = 12` (ms/char), `delay = 0`, `hold = false` (blinking caret after the line), `oncomplete?: () => void`, `ontick?: (drawn: number) => void`
+- `Crt`: `scanlines`, `sweep`, `flicker`, `vignette` (all `boolean = true`), `position: 'fixed' | 'absolute' = 'fixed'`
+- `Meter`: `value: number` (0–1, required), `label = ''`, `muted = false`, `cells = 24`, `delay = 0`, `stagger = 26` (ms between cells)
+- `Boot`: `lines: string[]` (required), `ondone: () => void` (required), `unit = ''`, `hint = 'PRESS ANY KEY TO CONTINUE'`, `speed = 9`, `duration = 1100` (progress bar ms), `skippable = true`, `ontick?`
+- `ScreenFrame`: `children: Snippet` (required), `title: string` (required), `code = ''`, `hint = '[ESC] BACK'`, `footer = ''`, `onback?: () => void`, `backHref?: string` (renders the back control as `<a href>`), `titleSpeed = 26`, `ontick?`. It does not listen for Escape itself.
+
+## Tokens
+
+Import `tokens.css` once and override on `:root` or any ancestor. Setting `--crt-phos`, `--crt-phos-hot` and `--crt-bar` re-skins everything; the shades below them are derived with `color-mix()` on `:root`.
+
+- Palette: `--crt-bg: #000000`, `--crt-phos: #4ade80`, `--crt-phos-hot: #d5ffe6`, `--crt-bar: #1ee07c`
+- Derived: `--crt-phos-mid` (62% phos), `--crt-phos-dim` (40%), `--crt-phos-faint` (16%), `--crt-rule` (26%), `--crt-glow` (50% bar), `--crt-flicker-ink` (2.5% phos)
+- Type: `--crt-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`, `--crt-display: var(--crt-mono)`, `--crt-tracking: 0.12em`
+- Tube (`Crt`): `--crt-z: 90`, `--crt-scanline-gap: 3px`, `--crt-scanline-ink: rgba(0, 0, 0, 0.26)`, `--crt-scanline-opacity: 0.6`, `--crt-sweep-height: 42vh`, `--crt-sweep-duration: 7.5s`, `--crt-flicker-duration: 4.2s`, `--crt-vignette-strength: 0.55`, `--crt-tube-glow: 6%`
+- Caret (`Typed`): `--crt-caret-width: 0.58em`, `--crt-caret-height: 1.02em`, `--crt-caret-blink: 1.06s`
+- Cells (`Meter`): `--crt-cell-width: 6px`, `--crt-cell-height: 12px`, `--crt-cell-gap: 2px`
+- `ScreenFrame`: `--crt-screen-min-height: 46vh`
+
+## Docs
+
+- [README](https://github.com/ritsuki-kagerou/crt-ui/blob/main/README.md): full prop tables, theming, design notes
+- [tokens.css](https://github.com/ritsuki-kagerou/crt-ui/blob/main/src/lib/tokens.css): token source
+- [Changelog](https://github.com/ritsuki-kagerou/crt-ui/blob/main/CHANGELOG.md)
+- [Live demos](https://crt-ui.ritsuki.dev/)
