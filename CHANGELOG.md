@@ -6,6 +6,14 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 
 ## [Unreleased]
 
+## [1.2.1] — 2026-10-04
+
+### Documentation
+
+- README notes that the components use Svelte 5 APIs only (callback props, snippets) and lists
+  every `--crt-*` token with its default and the components that read it.
+- The docs site serves `/llms.txt`, a compact API and token summary for AI tools.
+
 ## [1.2.0] — 2026-10-02
 
 ### Added
@@ -46,7 +54,8 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 First release: `Crt`, `Typed`, `Boot`, `Meter` and `ScreenFrame`, themed through the `--crt-*`
 tokens in `tokens.css`, with deterministic SSR output and hydration covered by tests.
 
-[Unreleased]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.0.0...v1.0.1
