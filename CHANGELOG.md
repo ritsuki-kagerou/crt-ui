@@ -6,6 +6,31 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-10-05
+
+### Added
+
+- `Dialog`: a modal window on the native `<dialog>`. Focus trap, inert background, Escape and
+  focus return come from the platform. `open` is bindable; `title` labels it; `footer` is a
+  snippet; `dismissable` (default) controls Escape, backdrop click and the close button;
+  `onclose` runs however it closed. Server-rendered closed.
+- `Tabs`: the WAI-ARIA tabs pattern. Left/Right, Home and End move between and select tabs,
+  disabled tabs are skipped, only the selected tab is in the Tab order, and the panel is a
+  focusable region labelled by its tab. `children` receives the active tab's id. `TabItem` is
+  exported as a type.
+- `Dropdown`: the WAI-ARIA menu-button pattern, with arrow keys, Home/End, typeahead, Escape
+  returning focus to the button, and Tab or an outside click closing the menu. Items are
+  actions (`onselect`) or links (`href`); disabled items are skipped. `DropdownItem` is
+  exported as a type.
+- `Toaster` and `toast`: `toast.push(message, { kind, duration })` feeds one `<Toaster />`
+  that keeps a polite and an assertive live region in the page. Timers pause on hover and
+  focus; errors stay until dismissed. `ToastKind`, `ToastMessage` and `ToastOptions` are
+  exported as types.
+- `--crt-dialog-width` token.
+- Tests: SSR/hydration cases for the new components, jsdom behaviour tests (keyboard,
+  focus, timers), axe on the open states, and Chromium e2e for focus trapping, focus return,
+  backdrop click, keyboard navigation and contrast.
+
 ## [1.3.0] — 2026-10-04
 
 ### Added
@@ -79,7 +104,8 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 First release: `Crt`, `Typed`, `Boot`, `Meter` and `ScreenFrame`, themed through the `--crt-*`
 tokens in `tokens.css`, with deterministic SSR output and hydration covered by tests.
 
-[Unreleased]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.1.0...v1.2.0
