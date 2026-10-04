@@ -2,7 +2,20 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createRawSnippet } from 'svelte';
 
-import { Boot, Button, Crt, Input, Meter, ScreenFrame, Select, Typed } from '$lib/index.js';
+import {
+	Boot,
+	Button,
+	Crt,
+	Dialog,
+	Dropdown,
+	Input,
+	Meter,
+	ScreenFrame,
+	Select,
+	Tabs,
+	Toaster,
+	Typed
+} from '$lib/index.js';
 import Kitchen from './fixtures/Kitchen.svelte';
 
 const noop = () => {};
@@ -127,6 +140,50 @@ export const CASES: Case[] = [
 			error: 'REQUIRED',
 			required: true
 		}
+	},
+	{
+		name: 'Dialog (closed)',
+		component: Dialog,
+		props: {
+			id: 'confirm',
+			title: 'CONFIRM PURGE',
+			children: text('THIS CANNOT BE UNDONE'),
+			footer: text('ACTIONS')
+		}
+	},
+	{
+		name: 'Dialog (not dismissable)',
+		component: Dialog,
+		props: { id: 'lock', title: 'LOCKED', dismissable: false, children: text('WAIT') }
+	},
+	{
+		name: 'Tabs',
+		component: Tabs,
+		props: {
+			id: 'sections',
+			label: 'SECTIONS',
+			tabs: [
+				{ id: 'status', label: 'STATUS' },
+				{ id: 'log', label: 'LOG' },
+				{ id: 'keys', label: 'KEYS', disabled: true }
+			],
+			value: 'log',
+			children: createRawSnippet<[string]>((id) => ({ render: () => `<p>PANEL ${id()}</p>` }))
+		}
+	},
+	{
+		name: 'Dropdown',
+		component: Dropdown,
+		props: {
+			id: 'actions',
+			label: 'ACTIONS',
+			items: [{ label: 'REBOOT' }, { label: 'DOCS', href: '/docs' }]
+		}
+	},
+	{
+		name: 'Toaster',
+		component: Toaster,
+		props: {}
 	},
 	{
 		name: 'Kitchen',

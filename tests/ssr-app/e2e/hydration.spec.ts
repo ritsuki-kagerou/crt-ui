@@ -230,7 +230,223 @@ test.describe('form components', () => {
 	});
 });
 
+test.describe('overlay and navigation components', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/');
+		await expect(page.getByTestId('boot-state')).toHaveText('DONE');
+	});
+
+	const inside = (page: Page, selector: string) =>
+		page.evaluate((sel) => !!document.activeElement?.closest(sel), selector);
+
+	test('Dialog is closed in the server markup and modal once opened', async ({
+		page,
+		request,
+		baseURL
+	}) => {
+		const markup = body(await (await request.get(baseURL!)).text());
+		expect(markup).toMatch(/<dialog(?![^>]* open)[^>]*>/);
+
+		const dialog = page.getByRole('dialog', { name: 'CONFIRM PURGE' });
+		await expect(dialog).toBeHidden();
+
+		await page.getByRole('button', { name: 'OPEN DIALOG' }).click();
+		await expect(dialog).toBeVisible();
+		expect(await inside(page, 'dialog')).toBe(true);
+
+		// focus never lands on the page behind it. After the last control Chromium hands
+		// focus to its own UI, which leaves `document.body` active, and then wraps back in.
+		const seen = new Set<string>();
+		for (let i = 0; i < 8; i++) {
+			await page.keyboard.press('Tab');
+			const where = await page.evaluate(() =>
+				document.activeElement === document.body
+					? 'browser'
+					: document.activeElement?.closest('dialog')
+						? 'dialog'
+						: 'page'
+			);
+			seen.add(where);
+		}
+		expect([...seen].sort()).toEqual(['browser', 'dialog']);
+	});
+
+	test('Dialog closes on Escape and gives focus back to its opener', async ({ page }) => {
+		const opener = page.getByRole('button', { name: 'OPEN DIALOG' });
+		await opener.click();
+		await expect(page.getByRole('dialog')).toBeVisible();
+
+		await page.keyboard.press('Escape');
+		await expect(page.getByRole('dialog')).toBeHidden();
+		await expect(opener).toBeFocused();
+		await expect(page.getByTestId('overlay-state')).toHaveText('status|NONE|1|0');
+	});
+
+	test('Dialog closes on a backdrop click and on its own buttons, and can reopen', async ({
+		page
+	}) => {
+		const opener = page.getByRole('button', { name: 'OPEN DIALOG' });
+		const dialog = page.getByRole('dialog');
+
+		await opener.click();
+		await page.mouse.click(4, 4);
+		await expect(dialog).toBeHidden();
+
+		await opener.click();
+		await dialog.getByRole('button', { name: 'CANCEL' }).click();
+		await expect(dialog).toBeHidden();
+
+		await opener.click();
+		await dialog.getByRole('button', { name: 'PURGE' }).click();
+		await expect(dialog).toBeHidden();
+
+		await opener.click();
+		await dialog.getByRole('button', { name: /CLOSE/ }).click();
+		await expect(dialog).toBeHidden();
+		await expect(page.getByTestId('overlay-state')).toHaveText('status|NONE|4|1');
+	});
+
+	test('Tabs: server-rendered selection, then arrow keys, skipping the disabled tab', async ({
+		page,
+		request,
+		baseURL
+	}) => {
+		const markup = body(await (await request.get(baseURL!)).text());
+		expect(markup).toContain('PANEL status');
+		expect(markup).not.toContain('PANEL log');
+
+		const status = page.getByRole('tab', { name: 'STATUS' });
+		await expect(status).toHaveAttribute('aria-selected', 'true');
+		await status.focus();
+
+		await page.keyboard.press('ArrowRight');
+		await expect(page.getByRole('tab', { name: 'LOG' })).toBeFocused();
+		await expect(page.getByTestId('panel')).toHaveText('PANEL log');
+
+		await page.keyboard.press('ArrowRight'); // KEYS is disabled
+		await expect(page.getByRole('tab', { name: 'ABOUT' })).toBeFocused();
+		await page.keyboard.press('ArrowRight');
+		await expect(status).toBeFocused();
+		await page.keyboard.press('End');
+		await expect(page.getByTestId('panel')).toHaveText('PANEL about');
+		await page.keyboard.press('Home');
+		await expect(page.getByTestId('panel')).toHaveText('PANEL status');
+
+		await page.getByRole('tab', { name: 'LOG' }).click();
+		await expect(page.getByTestId('overlay-state')).toContainText('log|');
+		await expect(page.getByRole('tabpanel')).toHaveAccessibleName('LOG');
+	});
+
+	test('Tabs: the panel is the next Tab stop after the selected tab', async ({ page }) => {
+		await page.getByRole('tab', { name: 'STATUS' }).focus();
+		await page.keyboard.press('Tab');
+		await expect(page.getByRole('tabpanel')).toBeFocused();
+	});
+
+	test('Dropdown opens from the keyboard, skips disabled items and restores focus', async ({
+		page
+	}) => {
+		const trigger = page.getByRole('button', { name: 'ACTIONS' });
+		await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+		await expect(page.getByRole('menu')).toHaveCount(0);
+
+		await trigger.focus();
+		await page.keyboard.press('ArrowDown');
+		await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+		await expect(page.getByRole('menuitem', { name: 'REBOOT' })).toBeFocused();
+
+		await page.keyboard.press('ArrowDown');
+		await expect(page.getByRole('menuitem', { name: 'SHUTDOWN' })).toBeFocused();
+
+		await page.keyboard.press('Escape');
+		await expect(page.getByRole('menu')).toHaveCount(0);
+		await expect(trigger).toBeFocused();
+
+		await page.keyboard.press('Enter');
+		await page.keyboard.press('End');
+		await page.keyboard.press('Enter');
+		await expect(page.getByTestId('overlay-state')).toContainText('|SHUTDOWN|');
+		await expect(page.getByRole('menu')).toHaveCount(0);
+		await expect(trigger).toBeFocused();
+	});
+
+	test('Dropdown closes on an outside click', async ({ page }) => {
+		await page.getByRole('button', { name: 'ACTIONS' }).click();
+		await expect(page.getByRole('menu')).toBeVisible();
+
+		await page.getByTestId('boot-state').click();
+		await expect(page.getByRole('menu')).toHaveCount(0);
+	});
+
+	test('Toaster announces messages, expires timed ones and keeps errors until dismissed', async ({
+		page
+	}) => {
+		await page.getByRole('button', { name: 'SAVE' }).click();
+		await page.getByRole('button', { name: 'FAIL' }).click();
+
+		await expect(page.getByRole('status').getByText('SAVED')).toBeVisible();
+		await expect(page.getByRole('alert').getByText('LINK LOST')).toBeVisible();
+
+		await expect(page.getByText('SAVED')).toBeHidden();
+		await expect(page.getByText('LINK LOST')).toBeVisible();
+
+		await page.getByRole('button', { name: 'Dismiss notification' }).click();
+		await expect(page.getByText('LINK LOST')).toBeHidden();
+	});
+
+	test('Toaster holds a message while the pointer rests on it', async ({ page }) => {
+		await page.getByRole('button', { name: 'SAVE' }).click();
+		const saved = page.getByText('SAVED');
+
+		await saved.hover();
+		await page.waitForTimeout(1200);
+		await expect(saved).toBeVisible();
+
+		await page.mouse.move(2, 2);
+		await expect(saved).toBeHidden();
+	});
+
+	test('keep working with no hydration noise', async ({ page }) => {
+		const noise = listen(page);
+
+		await page.getByRole('button', { name: 'OPEN DIALOG' }).click();
+		await page.keyboard.press('Escape');
+		await page.getByRole('tab', { name: 'LOG' }).click();
+		await page.getByRole('button', { name: 'ACTIONS' }).click();
+		await page.keyboard.press('Escape');
+		await page.getByRole('button', { name: 'SAVE' }).click();
+
+		expect([...noise.warnings, ...noise.errors]).toEqual([]);
+	});
+});
+
 test.describe('accessibility (axe, real browser)', () => {
+	const audit = async (page: Page) => {
+		const { violations } = await new AxeBuilder({ page })
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+		return violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`);
+	};
+
+	test('with the dialog open, colour contrast included', async ({ page }) => {
+		await page.goto('/');
+		await expect(page.getByTestId('boot-state')).toHaveText('DONE');
+		await page.getByRole('button', { name: 'OPEN DIALOG' }).click();
+		await expect(page.getByRole('dialog')).toBeVisible();
+
+		expect(await audit(page)).toEqual([]);
+	});
+
+	test('with the menu open and toasts showing, colour contrast included', async ({ page }) => {
+		await page.goto('/');
+		await expect(page.getByTestId('boot-state')).toHaveText('DONE');
+		await page.getByRole('button', { name: 'FAIL' }).click();
+		await page.getByRole('button', { name: 'ACTIONS' }).click();
+		await expect(page.getByRole('menu')).toBeVisible();
+
+		expect(await audit(page)).toEqual([]);
+	});
+
 	test('the page has no WCAG A/AA violations, colour contrast included', async ({ page }) => {
 		await page.goto('/');
 		await expect(page.getByTestId('boot-state')).toHaveText('DONE');

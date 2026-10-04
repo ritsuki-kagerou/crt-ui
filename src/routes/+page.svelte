@@ -1,5 +1,19 @@
 <script lang="ts">
-	import { Boot, Button, Crt, Input, Meter, ScreenFrame, Select, Typed } from '$lib/index.js';
+	import {
+		Boot,
+		Button,
+		Crt,
+		Dialog,
+		Dropdown,
+		Input,
+		Meter,
+		ScreenFrame,
+		Select,
+		Tabs,
+		Toaster,
+		toast,
+		Typed
+	} from '$lib/index.js';
 
 	let typedRun = $state(0);
 	let bootRun = $state(0);
@@ -35,10 +49,14 @@
 		for (const [name, value] of Object.entries(theme.tokens)) root.setProperty(name, value);
 	});
 
-	let callsign = $state('');
-	let channel = $state('relay');
-	let transmitted = $state('');
-	let callsignError = $derived(callsign.length > 8 ? 'MAX 8 CHARACTERS' : undefined);
+	let email = $state('');
+	let emailError = $derived(
+		email && !/^\S+@\S+\.\S+$/.test(email) ? 'Enter a valid email address' : undefined
+	);
+	let role = $state('');
+	let menuChoice = $state('');
+	let tab = $state('account');
+	let deleteOpen = $state(false);
 
 	const BOOT_LINES = [
 		'CRT/UI — BIOS 00.01',
@@ -71,7 +89,7 @@
 	<title>crt-ui — CRT terminal components for Svelte 5</title>
 	<meta
 		name="description"
-		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame, Button, Input, Select."
+		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame, Button, Input, Select, Dialog, Tabs, Dropdown, Toast."
 	/>
 	<link rel="canonical" href="https://crt-ui.ritsuki.dev/" />
 
@@ -81,7 +99,7 @@
 	<meta property="og:title" content="crt-ui — CRT terminal components for Svelte 5" />
 	<meta
 		property="og:description"
-		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame, Button, Input, Select."
+		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame, Button, Input, Select, Dialog, Tabs, Dropdown, Toast."
 	/>
 	<meta property="og:url" content="https://crt-ui.ritsuki.dev/" />
 	<meta property="og:image" content="https://crt-ui.ritsuki.dev/og.png" />
@@ -209,45 +227,193 @@
 	</section>
 
 	<section class="demo">
-		<h2 class="label">Button · Input · Select</h2>
+		<h2 class="label">Button</h2>
 		<hr class="rule" />
-		<form
-			class="demo__stage demo__stage--form"
-			onsubmit={(e) => {
-				e.preventDefault();
-				if (!callsignError) transmitted = `${callsign || 'ANON'} ON ${channel.toUpperCase()}`;
-			}}
-		>
-			<Input
-				label="Callsign"
-				bind:value={callsign}
-				placeholder="RK-9000"
-				hint="UP TO 8 CHARACTERS"
-				error={callsignError}
-			/>
-			<Select
-				label="Channel"
-				options={[
-					{ value: 'archive', label: 'CH-01 ARCHIVE' },
-					{ value: 'relay', label: 'CH-02 RELAY' },
-					{ value: 'deep', label: 'CH-03 DEEP SPACE', disabled: true }
-				]}
-				bind:value={channel}
-			/>
+		<div class="demo__stage demo__stage--form">
 			<div class="form-actions">
-				<Button type="submit" variant="solid">TRANSMIT</Button>
-				<Button onclick={() => ((callsign = ''), (transmitted = ''))}>CLEAR</Button>
-				<Button disabled>OFFLINE</Button>
+				<Button variant="solid">Primary</Button>
+				<Button>Outline</Button>
+				<Button disabled>Disabled</Button>
+				<Button href="https://github.com/ritsuki-kagerou/crt-ui">Link</Button>
 			</div>
-			<p class="hot" aria-live="polite">{transmitted && `> TRANSMITTED: ${transmitted}`}</p>
-		</form>
+		</div>
 		<p class="note dim">
-			Native <code>&lt;button&gt;</code>, <code>&lt;input&gt;</code> and <code>&lt;select&gt;</code>
-			underneath, so keyboard, touch and screen readers work as the platform intends. Labels are always
-			visible; <code>hint</code> and <code>error</code> are linked with
-			<code>aria-describedby</code>. Use <code>bind:value</code>; any other attribute passes
-			through. Give <code>Button</code> an <code>href</code> to render a link.
+			A native <code>&lt;button&gt;</code>. <code>solid</code> is for the one primary action; give
+			it an
+			<code>href</code> and it renders a real link.
 		</p>
+		<pre>{`<Button variant="solid" onclick={save}>Save changes</Button>
+<Button>Cancel</Button>
+<Button href="/docs">Read the docs</Button>`}</pre>
+	</section>
+
+	<section class="demo">
+		<h2 class="label">Input</h2>
+		<hr class="rule" />
+		<div class="demo__stage demo__stage--form">
+			<Input
+				label="Email"
+				type="email"
+				bind:value={email}
+				placeholder="you@example.com"
+				hint="We will never share your email."
+				error={emailError}
+			/>
+			<Input label="Password" type="password" prompt="" autocomplete="off" />
+		</div>
+		<p class="note dim">
+			A labelled text field. Type something without an <code>@</code> in Email to see the error
+			state.
+			<code>hint</code> and <code>error</code> are linked with <code>aria-describedby</code>.
+		</p>
+		<pre>{`<Input label="Email" type="email" bind:value={email} hint="We will never share your email." error={emailError} />`}</pre>
+	</section>
+
+	<section class="demo">
+		<h2 class="label">Select</h2>
+		<hr class="rule" />
+		<div class="demo__stage demo__stage--form">
+			<Select
+				label="Role"
+				placeholder="Choose a role"
+				options={[
+					{ value: 'viewer', label: 'Viewer' },
+					{ value: 'editor', label: 'Editor' },
+					{ value: 'admin', label: 'Admin', disabled: true }
+				]}
+				bind:value={role}
+			/>
+			<p class="hot" aria-live="polite">{role ? `Selected: ${role}` : 'Nothing selected yet.'}</p>
+		</div>
+		<p class="note dim">
+			A native <code>&lt;select&gt;</code>, so keyboard, touch and screen readers work as the
+			platform intends. In Chrome and Edge 135+ the open list is themed too.
+		</p>
+		<pre>{`<Select label="Role" placeholder="Choose a role" options={['viewer', 'editor']} bind:value={role} />`}</pre>
+	</section>
+
+	<section class="demo">
+		<h2 class="label">Dropdown</h2>
+		<hr class="rule" />
+		<div class="demo__stage demo__stage--form">
+			<div class="form-actions">
+				<Dropdown
+					label="My account"
+					items={[
+						{ label: 'Profile' },
+						{ label: 'Settings' },
+						{ label: 'Billing', disabled: true },
+						{ label: 'Documentation', href: 'https://github.com/ritsuki-kagerou/crt-ui' }
+					]}
+					onselect={(item) => (menuChoice = item.label)}
+				/>
+			</div>
+			<p class="hot" aria-live="polite">
+				{menuChoice ? `You chose: ${menuChoice}` : 'Open the menu and pick an item.'}
+			</p>
+		</div>
+		<p class="note dim">
+			A menu button. Use the arrow keys, Home/End or type a letter to move; Escape closes it and
+			returns focus to the button. Items are actions or links; disabled ones are skipped.
+		</p>
+		<pre>{`<Dropdown
+	label="My account"
+	items={[{ label: 'Profile' }, { label: 'Settings' }, { label: 'Docs', href: '/docs' }]}
+	onselect={(item) => console.log(item.label)}
+/>`}</pre>
+	</section>
+
+	<section class="demo">
+		<h2 class="label">Tabs</h2>
+		<hr class="rule" />
+		<div class="demo__stage demo__stage--form">
+			<Tabs
+				label="Settings"
+				bind:value={tab}
+				tabs={[
+					{ id: 'account', label: 'Account' },
+					{ id: 'password', label: 'Password' },
+					{ id: 'notifications', label: 'Notifications' }
+				]}
+			>
+				{#snippet children(active)}
+					{#if active === 'account'}
+						<p>Make changes to your account here.</p>
+					{:else if active === 'password'}
+						<p>Change your password here.</p>
+					{:else}
+						<p>Choose what you want to be notified about.</p>
+					{/if}
+				{/snippet}
+			</Tabs>
+		</div>
+		<p class="note dim">
+			Left and Right arrows (and Home/End) move between tabs and select them. Only the active panel
+			is rendered; the snippet receives its id.
+		</p>
+		<pre>{`<Tabs label="Settings" bind:value={tab} tabs={[{ id: 'account', label: 'Account' }, { id: 'password', label: 'Password' }]}>
+	{#snippet children(active)}
+		{#if active === 'account'}<Account />{:else}<Password />{/if}
+	{/snippet}
+</Tabs>`}</pre>
+	</section>
+
+	<section class="demo">
+		<h2 class="label">Dialog</h2>
+		<hr class="rule" />
+		<div class="demo__stage demo__stage--form">
+			<div class="form-actions">
+				<Button onclick={() => (deleteOpen = true)}>Delete account</Button>
+			</div>
+		</div>
+		<Dialog bind:open={deleteOpen} title="Are you absolutely sure?">
+			<p>
+				This action cannot be undone. It permanently deletes your account and removes your data.
+			</p>
+			{#snippet footer()}
+				<Button onclick={() => (deleteOpen = false)}>Cancel</Button>
+				<Button
+					variant="solid"
+					onclick={() => {
+						deleteOpen = false;
+						toast.push('Account deleted (just a demo)', { kind: 'success' });
+					}}>Delete</Button
+				>
+			{/snippet}
+		</Dialog>
+		<p class="note dim">
+			A modal on the native <code>&lt;dialog&gt;</code>: the platform traps focus, makes the page
+			behind it inert, closes on Escape and returns focus to the button that opened it.
+		</p>
+		<pre>{`<Dialog bind:open title="Are you absolutely sure?">
+	<p>This action cannot be undone.</p>
+	{#snippet footer()}
+		<Button onclick={() => (open = false)}>Cancel</Button>
+		<Button variant="solid" onclick={remove}>Delete</Button>
+	{/snippet}
+</Dialog>`}</pre>
+	</section>
+
+	<section class="demo">
+		<h2 class="label">Toast</h2>
+		<hr class="rule" />
+		<div class="demo__stage demo__stage--form">
+			<div class="form-actions">
+				<Button onclick={() => toast.push('Your changes have been saved.')}>Show toast</Button>
+				<Button onclick={() => toast.push('Profile updated.', { kind: 'success' })}>Success</Button>
+				<Button onclick={() => toast.push('Could not reach the server.', { kind: 'error' })}
+					>Error</Button
+				>
+			</div>
+		</div>
+		<p class="note dim">
+			Mount one <code>&lt;Toaster /&gt;</code>, then call <code>toast.push()</code> from anywhere on the
+			client. Messages are announced to screen readers; a toast pauses while hovered or focused, and errors
+			stay until dismissed.
+		</p>
+		<pre>{`<Toaster />
+
+<Button onclick={() => toast.push('Your changes have been saved.')}>Show toast</Button>`}</pre>
 	</section>
 
 	<section class="demo">
@@ -315,6 +481,8 @@
 	</footer>
 </main>
 
+<Toaster />
+
 <style>
 	.head {
 		display: grid;
@@ -375,7 +543,7 @@
 
 	.demo__stage--form {
 		gap: 1rem;
-		max-width: 28rem;
+		max-width: 34rem;
 	}
 
 	.form-actions {

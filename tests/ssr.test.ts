@@ -4,7 +4,17 @@ import { createRawSnippet } from 'svelte';
 import { render } from 'svelte/server';
 import { describe, expect, it } from 'vitest';
 
-import { Boot, Crt, Meter, ScreenFrame, Typed } from '$lib/index.js';
+import {
+	Boot,
+	Crt,
+	Dialog,
+	Dropdown,
+	Meter,
+	ScreenFrame,
+	Tabs,
+	Toaster,
+	Typed
+} from '$lib/index.js';
 import { CASES, markupPath, normalize } from './cases.js';
 
 const noop = () => {};
@@ -140,6 +150,74 @@ describe('SSR output is the settled, animation-free state', () => {
 		}).body;
 
 		expect(markup).not.toContain('screen__back');
+	});
+});
+
+describe('overlay and navigation components render their quiet state', () => {
+	const text = (t: string) => createRawSnippet(() => ({ render: () => `<span>${t}</span>` }));
+
+	it('Dialog is closed, labelled by its title, with the content already in the markup', () => {
+		const markup = render(Dialog, {
+			props: { id: 'd', title: 'CONFIRM', children: text('BODY') }
+		}).body;
+
+		expect(markup).not.toMatch(/<dialog[^>]* open/);
+		expect(markup).toContain('aria-labelledby="d-title"');
+		expect(markup).toContain('id="d-title"');
+		expect(markup).toContain('BODY');
+	});
+
+	it('Dialog drops the close button when it is not dismissable', () => {
+		const props = { title: 'T', children: text('B') };
+
+		expect(render(Dialog, { props }).body).toContain('dialog__close');
+		expect(render(Dialog, { props: { ...props, dismissable: false } }).body).not.toContain(
+			'dialog__close'
+		);
+	});
+
+	const tabs = [
+		{ id: 'a', label: 'A', disabled: true },
+		{ id: 'b', label: 'B' },
+		{ id: 'c', label: 'C' }
+	];
+	const panel = createRawSnippet<[string]>((id) => ({ render: () => `<p>PANEL ${id()}</p>` }));
+
+	it('Tabs selects the first enabled tab by default and renders only its panel', () => {
+		const markup = render(Tabs, { props: { id: 't', tabs, children: panel } }).body;
+
+		expect(markup).toContain('PANEL b');
+		expect(markup).not.toContain('PANEL c');
+		expect(markup.match(/aria-selected="true"/g)).toHaveLength(1);
+		expect(markup.match(/role="tabpanel"/g)).toHaveLength(1);
+		expect(markup).toContain('aria-labelledby="t-tab-b"');
+		expect(markup.match(/tabindex="0"/g)).toHaveLength(2); // the selected tab and the panel
+	});
+
+	it('Tabs ignores a `value` that is missing or disabled', () => {
+		for (const value of ['nope', 'a']) {
+			const markup = render(Tabs, { props: { id: 't', tabs, value, children: panel } }).body;
+			expect(markup).toContain('PANEL b');
+		}
+	});
+
+	it('Dropdown renders only its trigger, collapsed', () => {
+		const markup = render(Dropdown, {
+			props: { id: 'm', label: 'GO', items: [{ label: 'X' }] }
+		}).body;
+
+		expect(markup).toContain('aria-haspopup="menu"');
+		expect(markup).toContain('aria-expanded="false"');
+		expect(markup).not.toContain('role="menu"');
+		expect(markup).not.toContain('aria-controls');
+	});
+
+	it('Toaster renders both live regions, empty', () => {
+		const markup = render(Toaster, { props: {} }).body;
+
+		expect(markup).toContain('role="status"');
+		expect(markup).toContain('role="alert"');
+		expect(markup).not.toContain('toast__msg');
 	});
 });
 

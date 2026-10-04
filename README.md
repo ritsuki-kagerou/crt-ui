@@ -57,6 +57,10 @@ The components are written in runes mode and use Svelte 5 APIs only: events are 
 | `Button`      | Native button (or link with `href`), outline or solid.                   |
 | `Input`       | Labelled text field behind a prompt, with hint and error text.           |
 | `Select`      | Labelled native select in the same frame as `Input`.                     |
+| `Dialog`      | Modal window on the native `<dialog>`: focus trap, Escape, backdrop.     |
+| `Tabs`        | Tab list and panel with roving focus and arrow-key navigation.           |
+| `Dropdown`    | Menu button with a keyboard-navigable list of actions or links.          |
+| `Toaster`     | Renders the `toast` queue in always-present live regions.                |
 
 Every component also takes `class`, applied to its root element.
 
@@ -199,6 +203,119 @@ everywhere.
 <Select label="Phosphor" options={['green', 'amber']} bind:value={phosphor} />
 ```
 
+### `Dialog`
+
+| Prop          | Type         | Default | Notes                                                       |
+| ------------- | ------------ | ------- | ----------------------------------------------------------- |
+| `open`        | `boolean`    | `false` | use `bind:open`                                             |
+| `title`       | `string`     | —       | required; the heading and the dialog's accessible name      |
+| `children`    | `Snippet`    | —       | required; the content                                       |
+| `footer`      | `Snippet`    | —       | actions row, typically `Button`s                            |
+| `onclose`     | `() => void` | —       | runs after it closes, however it was closed                 |
+| `dismissable` | `boolean`    | `true`  | Escape, backdrop click and the close button; off = explicit |
+| `id`          | `string`     | auto    | generated with `$props.id()`                                |
+
+Built on `<dialog>.showModal()`, so the platform traps focus, makes the page behind it inert,
+closes on Escape and returns focus to whatever opened it. The server renders it closed; it opens
+after hydration. Any other `<dialog>` attribute is passed through (add `aria-describedby` for
+long content). The dialog sits in the browser's top layer, above `Crt`'s overlay. Set
+`--crt-dialog-width` to resize it.
+
+```svelte
+<script lang="ts">
+	let confirming = $state(false);
+</script>
+
+<Button onclick={() => (confirming = true)}>PURGE LOG</Button>
+
+<Dialog bind:open={confirming} title="Confirm purge">
+	<p>THIS CANNOT BE UNDONE.</p>
+	{#snippet footer()}
+		<Button onclick={() => (confirming = false)}>CANCEL</Button>
+		<Button variant="solid" onclick={purge}>PURGE</Button>
+	{/snippet}
+</Dialog>
+```
+
+### `Tabs`
+
+| Prop       | Type                | Default           | Notes                                |
+| ---------- | ------------------- | ----------------- | ------------------------------------ |
+| `tabs`     | `TabItem[]`         | —                 | required; `{ id, label, disabled? }` |
+| `value`    | `string`            | first enabled tab | the selected id; use `bind:value`    |
+| `children` | `Snippet<[string]>` | —                 | required; gets the active tab's id   |
+| `label`    | `string`            | —                 | accessible name for the tab list     |
+| `id`       | `string`            | auto              | prefix for the tab and panel ids     |
+
+Follows the WAI-ARIA tabs pattern: Left/Right, Home and End move between tabs and select them,
+disabled tabs are skipped, only the selected tab is in the Tab order, and Tab from it lands on
+the panel. Only the active panel is rendered. A `value` that is missing or disabled falls back
+to the first enabled tab. `TabItem` is exported as a type.
+
+```svelte
+<Tabs
+	label="Sections"
+	bind:value={tab}
+	tabs={[
+		{ id: 'status', label: 'STATUS' },
+		{ id: 'log', label: 'LOG' }
+	]}
+>
+	{#snippet children(active)}
+		{#if active === 'status'}<Status />{:else}<Log />{/if}
+	{/snippet}
+</Tabs>
+```
+
+### `Dropdown`
+
+| Prop       | Type                           | Default     | Notes                                              |
+| ---------- | ------------------------------ | ----------- | -------------------------------------------------- |
+| `label`    | `string`                       | —           | required; the trigger button's text                |
+| `items`    | `DropdownItem[]`               | —           | required; `{ label, href?, disabled?, onselect? }` |
+| `onselect` | `(item: DropdownItem) => void` | —           | runs for every selected item                       |
+| `align`    | `'start' \| 'end'`             | `'start'`   | which edge of the trigger the menu lines up with   |
+| `variant`  | `'outline' \| 'solid'`         | `'outline'` | the trigger's `Button` variant                     |
+| `id`       | `string`                       | auto        |                                                    |
+
+Follows the WAI-ARIA menu-button pattern. Enter, Space or Down opens the menu on the first
+item (Up on the last); arrows, Home/End and typing a letter move between items; Escape closes
+it and returns focus to the button; Tab or a click outside closes it. Disabled items stay in
+the menu but are skipped. An item with `href` renders as a link. The menu is positioned
+absolutely under the trigger, so it can be clipped by an ancestor with `overflow: hidden`.
+`DropdownItem` is exported as a type.
+
+### `Toaster` and `toast`
+
+Mount one `<Toaster />` near the root, then call `toast.push()` from anywhere on the client:
+
+```svelte
+<script lang="ts">
+	import { Toaster, toast } from '@ritsuki.kagerou/crt-ui';
+</script>
+
+<Button onclick={() => toast.push('SAVED', { kind: 'success' })}>SAVE</Button>
+<Toaster />
+```
+
+| `Toaster` prop | Type                                                           | Default           |
+| -------------- | -------------------------------------------------------------- | ----------------- |
+| `position`     | `'bottom-right' \| 'bottom-left' \| 'top-right' \| 'top-left'` | `'bottom-right'`  |
+| `label`        | `string`                                                       | `'Notifications'` |
+
+| `toast` member                      | Notes                                                                                                                                                       |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `push(message, { kind, duration })` | `kind`: `'info'` (default), `'success'`, `'error'`; returns the id. `duration` in ms, `0` keeps it until dismissed; defaults to 5000, and to `0` for errors |
+| `dismiss(id)`, `clear()`            |                                                                                                                                                             |
+| `messages`                          | the queue, read-only                                                                                                                                        |
+
+The `Toaster` keeps two live regions in the page at all times — polite for info and success,
+assertive (`role="alert"`) for errors — so screen readers announce each message as it arrives.
+A toast's timer pauses while the pointer or keyboard focus is on it, and it has a dismiss
+button. Call `toast.push()` from event handlers, effects and callbacks, never while rendering
+on the server: the queue is module state and would be shared between requests. Types
+`ToastKind`, `ToastMessage` and `ToastOptions` are exported.
+
 ## Theming
 
 Import `@ritsuki.kagerou/crt-ui/tokens.css` once, then override any `--crt-*` custom property —
@@ -223,38 +340,39 @@ you re-skin a single subtree instead, set the shades you need on that ancestor a
 Every component carries the same defaults inline, so skipping `tokens.css` and declaring
 the tokens yourself works too.
 
-| Token                     | Default                           | Used by                                      |
-| ------------------------- | --------------------------------- | -------------------------------------------- |
-| `--crt-bg`                | `#000000`                         | `Button`, `Select`                           |
-| `--crt-phos`              | `#4ade80`                         | `Crt`, `Input`, `Select`, derived shades     |
-| `--crt-phos-hot`          | `#d5ffe6`                         | all but `Typed`                              |
-| `--crt-bar`               | `#1ee07c`                         | `Meter`, `Boot`, `Button`, `Input`           |
-| `--crt-phos-mid`          | 62% of `--crt-phos`               | all but `Typed`, `Crt`                       |
-| `--crt-phos-dim`          | 40% of `--crt-phos`               | —                                            |
-| `--crt-phos-faint`        | 16% of `--crt-phos`               | `Meter`, `Boot`                              |
-| `--crt-rule`              | 26% of `--crt-phos`               | `ScreenFrame`, `Input`, `Select`             |
-| `--crt-glow`              | 50% of `--crt-bar`                | `Meter`, `Boot`, `Button`, `Input`, `Select` |
-| `--crt-alert`             | `#ff6b5e`                         | `Input`, `Select`                            |
-| `--crt-mono`              | `ui-monospace, …, monospace`      | —                                            |
-| `--crt-display`           | `var(--crt-mono)`                 | all but `Typed`, `Crt`                       |
-| `--crt-tracking`          | `0.12em`                          | —                                            |
-| `--crt-z`                 | `90`                              | `Crt`                                        |
-| `--crt-scanline-gap`      | `3px`                             | `Crt`                                        |
-| `--crt-scanline-ink`      | `rgba(0, 0, 0, 0.26)`             | `Crt`                                        |
-| `--crt-scanline-opacity`  | `0.6`                             | `Crt`                                        |
-| `--crt-sweep-height`      | `42vh`                            | `Crt`                                        |
-| `--crt-sweep-duration`    | `7.5s`                            | `Crt`                                        |
-| `--crt-flicker-duration`  | `4.2s`                            | `Crt`                                        |
-| `--crt-flicker-ink`       | 2.5% of `--crt-phos`              | `Crt`                                        |
-| `--crt-vignette-strength` | `0.55`                            | `Crt`                                        |
-| `--crt-tube-glow`         | `6%`                              | `Crt`                                        |
-| `--crt-caret-width`       | `0.58em`                          | `Typed`                                      |
-| `--crt-caret-height`      | `1.02em`                          | `Typed`                                      |
-| `--crt-caret-blink`       | `1.06s`                           | `Typed`                                      |
-| `--crt-cell-width`        | `6px`                             | `Meter`                                      |
-| `--crt-cell-height`       | `12px`                            | `Meter`                                      |
-| `--crt-cell-gap`          | `2px`                             | `Meter`                                      |
-| `--crt-screen-min-height` | `46vh` (not declared in the file) | `ScreenFrame`                                |
+| Token                     | Default                           | Used by                                                     |
+| ------------------------- | --------------------------------- | ----------------------------------------------------------- |
+| `--crt-bg`                | `#000000`                         | `Button`, `Select`, `Dialog`, `Tabs`, `Dropdown`, `Toaster` |
+| `--crt-phos`              | `#4ade80`                         | `Crt`, `Input`, `Select`, derived shades                    |
+| `--crt-phos-hot`          | `#d5ffe6`                         | all but `Typed`                                             |
+| `--crt-bar`               | `#1ee07c`                         | `Meter`, `Boot`, `Button`, `Input`                          |
+| `--crt-phos-mid`          | 62% of `--crt-phos`               | all but `Typed`, `Crt`                                      |
+| `--crt-phos-dim`          | 40% of `--crt-phos`               | —                                                           |
+| `--crt-phos-faint`        | 16% of `--crt-phos`               | `Meter`, `Boot`                                             |
+| `--crt-rule`              | 26% of `--crt-phos`               | `ScreenFrame`, `Input`, `Select`                            |
+| `--crt-glow`              | 50% of `--crt-bar`                | `Meter`, `Boot`, `Button`, `Input`, `Select`                |
+| `--crt-alert`             | `#ff6b5e`                         | `Input`, `Select`, `Toaster`                                |
+| `--crt-mono`              | `ui-monospace, …, monospace`      | —                                                           |
+| `--crt-display`           | `var(--crt-mono)`                 | all but `Typed`, `Crt`                                      |
+| `--crt-tracking`          | `0.12em`                          | —                                                           |
+| `--crt-z`                 | `90`                              | `Crt`                                                       |
+| `--crt-scanline-gap`      | `3px`                             | `Crt`                                                       |
+| `--crt-scanline-ink`      | `rgba(0, 0, 0, 0.26)`             | `Crt`                                                       |
+| `--crt-scanline-opacity`  | `0.6`                             | `Crt`                                                       |
+| `--crt-sweep-height`      | `42vh`                            | `Crt`                                                       |
+| `--crt-sweep-duration`    | `7.5s`                            | `Crt`                                                       |
+| `--crt-flicker-duration`  | `4.2s`                            | `Crt`                                                       |
+| `--crt-flicker-ink`       | 2.5% of `--crt-phos`              | `Crt`                                                       |
+| `--crt-vignette-strength` | `0.55`                            | `Crt`                                                       |
+| `--crt-tube-glow`         | `6%`                              | `Crt`                                                       |
+| `--crt-dialog-width`      | `min(34rem, calc(100vw - 2rem))`  | `Dialog`                                                    |
+| `--crt-caret-width`       | `0.58em`                          | `Typed`                                                     |
+| `--crt-caret-height`      | `1.02em`                          | `Typed`                                                     |
+| `--crt-caret-blink`       | `1.06s`                           | `Typed`                                                     |
+| `--crt-cell-width`        | `6px`                             | `Meter`                                                     |
+| `--crt-cell-height`       | `12px`                            | `Meter`                                                     |
+| `--crt-cell-gap`          | `2px`                             | `Meter`                                                     |
+| `--crt-screen-min-height` | `46vh` (not declared in the file) | `ScreenFrame`                                               |
 
 `--crt-phos-dim`, `--crt-mono` and `--crt-tracking` are declared for your app to use; no
 component reads them directly. Source: [`src/lib/tokens.css`](src/lib/tokens.css).

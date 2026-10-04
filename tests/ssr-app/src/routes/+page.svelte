@@ -3,10 +3,15 @@
 		Boot,
 		Button,
 		Crt,
+		Dialog,
+		Dropdown,
 		Input,
 		Meter,
 		ScreenFrame,
 		Select,
+		Tabs,
+		Toaster,
+		toast,
 		Typed
 	} from '@ritsuki.kagerou/crt-ui';
 
@@ -20,6 +25,11 @@
 	let phosphor = $state('amber');
 	let sector = $state('');
 	let executed = $state(0);
+	let dialogOpen = $state(false);
+	let closes = $state(0);
+	let purged = $state(0);
+	let tab = $state('status');
+	let action = $state('NONE');
 </script>
 
 <Boot
@@ -67,6 +77,50 @@
 
 <p data-testid="form-state">{callsign}|{phosphor}|{sector}|{executed}</p>
 
+<section data-testid="overlays">
+	<Button onclick={() => (dialogOpen = true)}>OPEN DIALOG</Button>
+	<Dialog bind:open={dialogOpen} title="CONFIRM PURGE" onclose={() => closes++}>
+		<p>THIS CANNOT BE UNDONE</p>
+		{#snippet footer()}
+			<Button onclick={() => (dialogOpen = false)}>CANCEL</Button>
+			<Button
+				variant="solid"
+				onclick={() => {
+					purged++;
+					dialogOpen = false;
+				}}>PURGE</Button
+			>
+		{/snippet}
+	</Dialog>
+
+	<Tabs
+		label="SECTIONS"
+		bind:value={tab}
+		tabs={[
+			{ id: 'status', label: 'STATUS' },
+			{ id: 'log', label: 'LOG' },
+			{ id: 'keys', label: 'KEYS', disabled: true },
+			{ id: 'about', label: 'ABOUT' }
+		]}
+	>
+		{#snippet children(active)}
+			<p data-testid="panel">PANEL {active}</p>
+		{/snippet}
+	</Tabs>
+
+	<Dropdown
+		label="ACTIONS"
+		items={[{ label: 'REBOOT' }, { label: 'LOCKED', disabled: true }, { label: 'SHUTDOWN' }]}
+		onselect={(item) => (action = item.label)}
+	/>
+
+	<Button onclick={() => toast.push('SAVED', { kind: 'success', duration: 600 })}>SAVE</Button>
+	<Button onclick={() => toast.push('LINK LOST', { kind: 'error' })}>FAIL</Button>
+</section>
+
+<p data-testid="overlay-state">{tab}|{action}|{closes}|{purged}</p>
+
 <button data-testid="raise" onclick={() => (level = 0.75)}>RAISE LEVEL</button>
 
+<Toaster />
 <Crt />

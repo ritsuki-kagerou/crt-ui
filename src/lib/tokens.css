@@ -23,7 +23,7 @@
 	--crt-phos-faint: color-mix(in srgb, var(--crt-phos) 16%, transparent);
 	--crt-rule: color-mix(in srgb, var(--crt-phos) 26%, transparent);
 	--crt-glow: color-mix(in srgb, var(--crt-bar) 50%, transparent);
-	--crt-alert: #ff6b5e; /* error text and borders (Input, Select) */
+	--crt-alert: #ff6b5e; /* error text and borders (Input, Select, Toaster) */
 
 	/* --- type ------------------------------------------------------- */
 	--crt-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -41,6 +41,9 @@
 	--crt-flicker-ink: color-mix(in srgb, var(--crt-phos) 2.5%, transparent);
 	--crt-vignette-strength: 0.55;
 	--crt-tube-glow: 6%; /* phosphor glow behind the screen, 0%–100% */
+
+	/* --- dialog ----------------------------------------------------- */
+	--crt-dialog-width: min(34rem, calc(100vw - 2rem));
 
 	/* --- caret (Typed) ---------------------------------------------- */
 	--crt-caret-width: 0.58em;
