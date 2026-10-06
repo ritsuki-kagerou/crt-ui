@@ -20,7 +20,14 @@
 	let bootRun = $state(0);
 	let bootDone = $state(false);
 
-	let layers = $state({ scanlines: true, sweep: true, flicker: true, vignette: true });
+	let layers = $state({
+		scanlines: true,
+		sweep: true,
+		flicker: true,
+		vignette: true,
+		noise: false,
+		curvature: false
+	});
 	let glow = $state(6);
 
 	const THEMES = [
@@ -488,13 +495,16 @@
 				sweep={layers.sweep}
 				flicker={layers.flicker}
 				vignette={layers.vignette}
+				noise={layers.noise}
+				curvature={layers.curvature}
 			/>
 		</div>
 		<p class="note dim">
 			Pointer-transparent and <code>aria-hidden</code>. Mounted once in the root layout it covers
 			the viewport; with <code>position="absolute"</code> it covers the nearest positioned ancestor
-			instead. The glow slider sets <code>--crt-tube-glow</code> on this box; it is drawn by the vignette
-			layer.
+			instead. The glow slider sets <code>--crt-tube-glow</code> on this box; it is drawn by the
+			vignette layer. <code>noise</code> and <code>curvature</code> are off by default; curvature rounds
+			the glass corners and shades the bezel but does not warp the content.
 		</p>
 	</section>
 

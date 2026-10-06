@@ -81,7 +81,13 @@ Every component also takes `class`, applied to its root element.
 | Prop                                           | Type                    | Default   |
 | ---------------------------------------------- | ----------------------- | --------- |
 | `scanlines` / `sweep` / `flicker` / `vignette` | `boolean`               | `true`    |
+| `noise` / `curvature`                          | `boolean`               | `false`   |
 | `position`                                     | `'fixed' \| 'absolute'` | `'fixed'` |
+
+`noise` adds film grain (strength `--crt-noise-opacity`, jump rate `--crt-noise-duration`).
+`curvature` rounds the glass corners and shades the bezel (`--crt-curvature-radius`,
+`--crt-curvature-shade`); it is a frame effect, the content underneath is not warped, so text
+stays sharp and clickable. The corners are painted over with `--crt-bg`.
 
 How bright the phosphor glows behind the screen is a token, not a prop: set `--crt-tube-glow`
 (default `6%`, `0%` turns it off). The glow is drawn by the vignette layer, so it goes away with
@@ -410,6 +416,10 @@ the tokens yourself works too.
 | `--crt-flicker-ink`           | 2.5% of `--crt-phos`              | `Crt`                                                       |
 | `--crt-vignette-strength`     | `0.55`                            | `Crt`                                                       |
 | `--crt-tube-glow`             | `6%`                              | `Crt`                                                       |
+| `--crt-noise-opacity`         | `0.07`                            | `Crt` (`noise`)                                             |
+| `--crt-noise-duration`        | `0.8s`                            | `Crt` (`noise`)                                             |
+| `--crt-curvature-radius`      | `2.5rem`                          | `Crt` (`curvature`)                                         |
+| `--crt-curvature-shade`       | `0.5`                             | `Crt` (`curvature`)                                         |
 | `--crt-dialog-width`          | `min(34rem, calc(100vw - 2rem))`  | `Dialog`                                                    |
 | `--crt-caret-width`           | `0.58em`                          | `Typed`                                                     |
 | `--crt-caret-height`          | `1.02em`                          | `Typed`                                                     |
@@ -456,7 +466,7 @@ Props stay behavioural. That keeps the API small and lets a consumer reskin the 
 green tube to amber tube — without touching a single component.
 
 **Motion is optional.** Every animation is behind `prefers-reduced-motion: reduce`: the
-sweep is removed, flicker and caret blink stop, meter cells light instantly, and `Typed`
+sweep is removed, flicker, noise and caret blink stop, meter cells light instantly, and `Typed`
 resolves the full line in one frame while still firing `oncomplete` so boot sequences do not
 stall.
 

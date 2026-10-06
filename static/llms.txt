@@ -60,7 +60,7 @@ Svelte 5 only. Components use runes; events are callback props (`ondone`, `onbac
 ## Props
 
 - `Typed`: `text: string` (required), `speed = 12` (ms/char), `delay = 0`, `hold = false` (blinking caret after the line), `oncomplete?: () => void`, `ontick?: (drawn: number) => void`
-- `Crt`: `scanlines`, `sweep`, `flicker`, `vignette` (all `boolean = true`), `position: 'fixed' | 'absolute' = 'fixed'`
+- `Crt`: `scanlines`, `sweep`, `flicker`, `vignette` (all `boolean = true`), `noise`, `curvature` (`boolean = false`), `position: 'fixed' | 'absolute' = 'fixed'`
 - `Meter`: `value: number` (0–1, required), `label = ''`, `muted = false`, `cells = 24`, `delay = 0`, `stagger = 26` (ms between cells)
 - `Boot`: `lines: string[]` (required), `ondone: () => void` (required), `unit = ''`, `hint = 'PRESS ANY KEY TO CONTINUE'`, `speed = 9`, `duration = 1100` (progress bar ms), `skippable = true`, `ontick?`
 - `Button`: `children: Snippet` (required), `variant: 'outline' | 'solid' = 'outline'`, `href?: string` (renders `<a>`), `type = 'button'`, `disabled = false`, `onclick?`. Other `<button>` attributes pass through.
@@ -84,7 +84,7 @@ Import `tokens.css` once and override on `:root` or any ancestor. Setting `--crt
 - Alert: `--crt-alert: #ff6b5e` (error text and borders on `Input`, `Select` and error toasts)
 - Dialog: `--crt-dialog-width: min(34rem, calc(100vw - 2rem))`
 - Type: `--crt-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`, `--crt-display: var(--crt-mono)`, `--crt-tracking: 0.12em`
-- Tube (`Crt`): `--crt-z: 90`, `--crt-scanline-gap: 3px`, `--crt-scanline-ink: rgba(0, 0, 0, 0.26)`, `--crt-scanline-opacity: 0.6`, `--crt-sweep-height: 42vh`, `--crt-sweep-duration: 7.5s`, `--crt-flicker-duration: 4.2s`, `--crt-vignette-strength: 0.55`, `--crt-tube-glow: 6%`
+- Tube (`Crt`): `--crt-z: 90`, `--crt-scanline-gap: 3px`, `--crt-scanline-ink: rgba(0, 0, 0, 0.26)`, `--crt-scanline-opacity: 0.6`, `--crt-sweep-height: 42vh`, `--crt-sweep-duration: 7.5s`, `--crt-flicker-duration: 4.2s`, `--crt-vignette-strength: 0.55`, `--crt-tube-glow: 6%`, `--crt-noise-opacity: 0.07`, `--crt-noise-duration: 0.8s`, `--crt-curvature-radius: 2.5rem`, `--crt-curvature-shade: 0.5`
 - Caret (`Typed`): `--crt-caret-width: 0.58em`, `--crt-caret-height: 1.02em`, `--crt-caret-blink: 1.06s`
 - Cells (`Meter`): `--crt-cell-width: 6px`, `--crt-cell-height: 12px`, `--crt-cell-gap: 2px`
 - `ScreenFrame`: `--crt-screen-min-height: 46vh`

@@ -40,6 +40,11 @@ export const CASES: Case[] = [
 		props: { scanlines: false, sweep: false, flicker: false, vignette: false }
 	},
 	{
+		name: 'Crt (noise, curvature)',
+		component: Crt,
+		props: { noise: true, curvature: true }
+	},
+	{
 		name: 'Meter',
 		component: Meter,
 		props: { value: 0.6, label: 'PRIMARY' }

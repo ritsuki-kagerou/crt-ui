@@ -6,6 +6,14 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 
 ## [Unreleased]
 
+### Added
+
+- `Crt`: `noise` (film grain) and `curvature` (rounded glass corners and bezel shading) props,
+  both off by default, with tokens `--crt-noise-opacity`, `--crt-noise-duration`,
+  `--crt-curvature-radius` and `--crt-curvature-shade`. Noise stops under
+  `prefers-reduced-motion`.
+- The `Crt` root now clips its overflow.
+
 ## [1.5.0] — 2026-10-06
 
 ### Added
