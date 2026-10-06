@@ -185,4 +185,10 @@
 			animation-duration: 300ms;
 		}
 	}
+	:global([data-crt-motion='off']) .boot__hint {
+		animation: none;
+	}
+	:global([data-crt-motion='off']) .boot__fill {
+		animation-duration: 300ms;
+	}
 </style>

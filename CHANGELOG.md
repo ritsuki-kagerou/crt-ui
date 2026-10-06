@@ -13,6 +13,9 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
   `--crt-curvature-radius` and `--crt-curvature-shade`. Noise stops under
   `prefers-reduced-motion`.
 - The `Crt` root now clips its overflow.
+- `data-crt-motion="off"` on any ancestor turns animation off by hand, with the same effect as
+  `prefers-reduced-motion: reduce` (`Crt`, `Typed`, `Boot`, `Meter`, `Button`, `Input`/`Select`,
+  `Toaster`). It never overrides the OS setting the other way.
 
 ## [1.5.0] — 2026-10-06
 

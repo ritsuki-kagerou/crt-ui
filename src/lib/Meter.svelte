@@ -107,4 +107,7 @@
 			animation: none;
 		}
 	}
+	:global([data-crt-motion='off']) .meter__cell--on {
+		animation: none;
+	}
 </style>

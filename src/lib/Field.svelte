@@ -90,4 +90,7 @@
 			transition: none;
 		}
 	}
+	:global([data-crt-motion='off']) .field__frame {
+		transition: none;
+	}
 </style>

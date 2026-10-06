@@ -37,13 +37,17 @@
 
 	/** `null` means "whole line, no caret" — the state SSR renders. */
 	let shown = $state<number | null>(null);
+	let root = $state<HTMLSpanElement>();
 
 	$effect(() => {
 		const full = text;
 		const per = speed;
 		const wait = delay;
 
-		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		if (
+			window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+			root?.closest('[data-crt-motion="off"]')
+		) {
 			shown = full.length;
 			oncomplete?.();
 			return;
@@ -84,7 +88,7 @@
 	let showCaret = $derived(typing || (hold && shown !== null));
 </script>
 
-<span class={klass}
+<span class={klass} bind:this={root}
 	>{#if shown === null}{text}{:else}<span class="crt-sr">{text}</span><span aria-hidden="true"
 			>{visible}</span
 		>{/if}{#if showCaret}<span class="crt-caret" class:crt-caret--blink={!typing} aria-hidden="true"
@@ -138,5 +142,8 @@
 		.crt-caret--blink {
 			animation: none;
 		}
+	}
+	:global([data-crt-motion='off']) .crt-caret--blink {
+		animation: none;
 	}
 </style>

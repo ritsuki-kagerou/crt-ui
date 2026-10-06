@@ -470,6 +470,11 @@ sweep is removed, flicker, noise and caret blink stop, meter cells light instant
 resolves the full line in one frame while still firing `oncomplete` so boot sequences do not
 stall.
 
+The same switch is available by hand: put `data-crt-motion="off"` on `<html>`, `<body>` or any
+wrapper and everything inside it behaves as under `prefers-reduced-motion` — handy for a "reduce
+animations" setting in your own UI. It only turns motion off; it never turns it back on against
+the user's OS preference.
+
 **Extracted, not invented.** These components ran on a personal site first. The work here
 was tightening the API and cutting the app-specific data out of them — not inventing a
 library in the abstract.

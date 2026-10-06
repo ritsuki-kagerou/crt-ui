@@ -208,4 +208,11 @@
 			animation: none;
 		}
 	}
+	:global([data-crt-motion='off']) .crt__sweep {
+		display: none;
+	}
+	:global([data-crt-motion='off']) .crt__noise,
+	:global([data-crt-motion='off']) .crt__flicker {
+		animation: none;
+	}
 </style>

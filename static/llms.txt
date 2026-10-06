@@ -1,6 +1,6 @@
 # crt-ui
 
-> CRT terminal components for Svelte 5 (`@ritsuki.kagerou/crt-ui`): Crt, Typed, Boot, Meter, ScreenFrame, plus Button, Input and Select form controls, a Table, and Dialog, Tabs, Dropdown and Toaster overlays. SSR-safe, themed with `--crt-*` CSS custom properties, reduced-motion aware. No runtime dependencies.
+> CRT terminal components for Svelte 5 (`@ritsuki.kagerou/crt-ui`): Crt, Typed, Boot, Meter, ScreenFrame, plus Button, Input and Select form controls, a Table, and Dialog, Tabs, Dropdown and Toaster overlays. SSR-safe, themed with `--crt-*` CSS custom properties, reduced-motion aware (also `data-crt-motion="off"` on any ancestor turns animation off by hand). No runtime dependencies.
 
 Svelte 5 only. Components use runes; events are callback props (`ondone`, `onback`, `oncomplete`, `ontick`, `onclick`), not `on:` directives; `ScreenFrame` and `Button` content is a `children` snippet, not a slot; `Input` and `Select` use `bind:value`, `Dialog` uses `bind:open`, `Tabs` uses `bind:value`; `Dialog`, `Tabs` and `Toaster` content is a snippet too (`footer`, `children(active)`). Every component also takes `class`. Colours, timing and geometry are tokens, not props.
 

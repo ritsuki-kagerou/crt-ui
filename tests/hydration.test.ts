@@ -13,6 +13,7 @@ import {
 	Table,
 	Tabs,
 	Toaster,
+	Typed,
 	toast
 } from '$lib/index.js';
 import { CASES, normalize, readMarkup } from './cases.js';
@@ -168,6 +169,38 @@ function mountIn<P extends Record<string, unknown>>(component: unknown, props: P
 }
 
 const label = (t: string) => createRawSnippet(() => ({ render: () => `<span>${t}</span>` }));
+
+describe('data-crt-motion="off"', () => {
+	it('resolves `Typed` at once and still fires `oncomplete`', () => {
+		document.body.setAttribute('data-crt-motion', 'off');
+		let done = 0;
+		const { target, cleanup } = mountIn(Typed, {
+			text: 'BACKEND & API',
+			speed: 1000,
+			oncomplete: () => done++
+		});
+
+		flushSync();
+		expect(target.textContent).toContain('BACKEND & API');
+		expect(target.querySelector('.crt-caret')).toBeNull();
+		expect(done).toBe(1);
+		cleanup();
+		document.body.removeAttribute('data-crt-motion');
+	});
+
+	it('leaves `Typed` typing without it', () => {
+		let done = 0;
+		const { cleanup } = mountIn(Typed, {
+			text: 'BACKEND & API',
+			speed: 1000,
+			oncomplete: () => done++
+		});
+
+		flushSync();
+		expect(done).toBe(0);
+		cleanup();
+	});
+});
 
 describe('Button', () => {
 	it('is a `type="button"` that runs `onclick`', () => {

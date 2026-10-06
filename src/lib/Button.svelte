@@ -101,4 +101,7 @@
 			transition: none;
 		}
 	}
+	:global([data-crt-motion='off']) .btn {
+		transition: none;
+	}
 </style>

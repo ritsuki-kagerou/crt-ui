@@ -181,4 +181,7 @@
 			animation: none;
 		}
 	}
+	:global([data-crt-motion='off']) .toast {
+		animation: none;
+	}
 </style>
