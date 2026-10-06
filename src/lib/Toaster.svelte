@@ -157,18 +157,16 @@
 		font: inherit;
 		letter-spacing: 0.1em;
 		text-shadow: inherit;
-		opacity: 0.75;
 		cursor: pointer;
 	}
 
 	.toast__close:hover {
-		opacity: 1;
+		text-decoration: underline;
 	}
 
 	.toast__close:focus-visible {
 		outline: 1px solid currentColor;
 		outline-offset: 3px;
-		opacity: 1;
 	}
 
 	@keyframes toast-in {

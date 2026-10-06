@@ -422,6 +422,9 @@ test.describe('overlay and navigation components', () => {
 
 test.describe('accessibility (axe, real browser)', () => {
 	const audit = async (page: Page) => {
+		// axe reads the painted colour, so sample it with motion off: no mid-fade toast or
+		// mid-transition button (the components drop their motion under reduced-motion)
+		await page.emulateMedia({ reducedMotion: 'reduce' });
 		const { violations } = await new AxeBuilder({ page })
 			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
 			.analyze();
