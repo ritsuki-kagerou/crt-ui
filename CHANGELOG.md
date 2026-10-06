@@ -6,6 +6,26 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 
 ## [Unreleased]
 
+## [1.5.0] — 2026-10-06
+
+### Added
+
+- `Table`: a native `<table>` with a `<caption>`, `scope` on every header, an optional row
+  header column (`rowHeader`), per-column `align`, an `empty` message and a `cell` snippet for
+  custom content. A named table scrolls inside a focusable region. `TableColumn` is exported
+  as a type.
+- Spacing tokens `--crt-space-1` … `--crt-space-5`, and type tokens `--crt-text-sm`, `-md`,
+  `-lg` and `--crt-leading`.
+- `@ritsuki.kagerou/crt-ui/presets/white.css`: a white phosphor (P4) preset, set on the same
+  three palette tokens. The docs page gains a P4 WHITE theme.
+- Tests: SSR/hydration cases, jsdom behaviour tests and axe for `Table`, and the Table on the
+  e2e page.
+
+### Fixed
+
+- `Toaster`: the close button was dimmed with `opacity`, which dropped an error toast's `[X]`
+  below WCAG AA contrast (4.45:1). It now keeps full colour and underlines on hover.
+
 ## [1.4.0] — 2026-10-05
 
 ### Added
@@ -104,7 +124,8 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 First release: `Crt`, `Typed`, `Boot`, `Meter` and `ScreenFrame`, themed through the `--crt-*`
 tokens in `tokens.css`, with deterministic SSR output and hydration covered by tests.
 
-[Unreleased]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.2.0...v1.2.1
