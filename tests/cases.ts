@@ -12,6 +12,7 @@ import {
 	Meter,
 	ScreenFrame,
 	Select,
+	Table,
 	Tabs,
 	Toaster,
 	Typed
@@ -139,6 +140,33 @@ export const CASES: Case[] = [
 			hint: 'TWO SECTORS ONLINE',
 			error: 'REQUIRED',
 			required: true
+		}
+	},
+	{
+		name: 'Table',
+		component: Table,
+		props: {
+			caption: 'SECTORS',
+			columns: [
+				{ key: 'id', label: 'ID' },
+				{ key: 'name', label: 'NAME' },
+				{ key: 'load', label: 'LOAD %', align: 'end' }
+			],
+			rows: [
+				{ id: '01', name: 'ALPHA', load: 42 },
+				{ id: '02', name: 'BRAVO', load: 7 }
+			],
+			rowHeader: 'id'
+		}
+	},
+	{
+		name: 'Table (empty)',
+		component: Table,
+		props: {
+			label: 'LOG',
+			columns: [{ key: 'line', label: 'LINE' }],
+			rows: [],
+			empty: 'NOTHING YET'
 		}
 	},
 	{

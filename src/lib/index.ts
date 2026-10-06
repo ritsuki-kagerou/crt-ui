@@ -13,6 +13,7 @@ export { default as ScreenFrame } from './ScreenFrame.svelte';
 export { default as Button } from './Button.svelte';
 export { default as Input } from './Input.svelte';
 export { default as Select, type SelectOption } from './Select.svelte';
+export { default as Table, type TableColumn } from './Table.svelte';
 export { default as Dialog } from './Dialog.svelte';
 export { default as Tabs, type TabItem } from './Tabs.svelte';
 export { default as Dropdown, type DropdownItem } from './Dropdown.svelte';

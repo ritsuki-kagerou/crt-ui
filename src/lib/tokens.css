@@ -29,6 +29,17 @@
 	--crt-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 	--crt-display: var(--crt-mono);
 	--crt-tracking: 0.12em;
+	--crt-text-sm: 0.8rem;
+	--crt-text-md: 0.9rem;
+	--crt-text-lg: 1.1rem;
+	--crt-leading: 1.45;
+
+	/* --- spacing (Table; use it in your own layouts) ---------------- */
+	--crt-space-1: 0.25rem;
+	--crt-space-2: 0.5rem;
+	--crt-space-3: 0.9rem;
+	--crt-space-4: 1.4rem;
+	--crt-space-5: 2.2rem;
 
 	/* --- tube (Crt) ------------------------------------------------- */
 	--crt-z: 90;

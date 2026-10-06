@@ -9,6 +9,7 @@
 		Meter,
 		ScreenFrame,
 		Select,
+		Table,
 		Tabs,
 		Toaster,
 		toast,
@@ -28,6 +29,11 @@
 			id: 'amber',
 			label: 'P3 AMBER',
 			tokens: { '--crt-phos': '#ffb000', '--crt-phos-hot': '#fff0c9', '--crt-bar': '#ffc23d' }
+		},
+		{
+			id: 'white',
+			label: 'P4 WHITE',
+			tokens: { '--crt-phos': '#d8dee6', '--crt-phos-hot': '#ffffff', '--crt-bar': '#e9edf2' }
 		}
 	] as const;
 	const THEME_TOKENS = ['--crt-phos', '--crt-phos-hot', '--crt-bar'];
@@ -78,6 +84,8 @@
 		['--crt-rule', 'rgba(…, .26)', 'hairlines and borders'],
 		['--crt-alert', '#ff6b5e', 'error text and borders'],
 		['--crt-display', 'var(--crt-mono)', 'display face for titles'],
+		['--crt-space-1…5', '0.25rem … 2.2rem', 'spacing scale (Table, your layouts)'],
+		['--crt-text-sm…lg', '0.8rem … 1.1rem', 'type scale (Table, your layouts)'],
 		['--crt-tube-glow', '6%', 'phosphor glow behind the screen'],
 		['--crt-sweep-duration', '7.5s', 'beam pass period'],
 		['--crt-scanline-gap', '3px', 'scanline pitch'],
@@ -89,7 +97,7 @@
 	<title>crt-ui — CRT terminal components for Svelte 5</title>
 	<meta
 		name="description"
-		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame, Button, Input, Select, Dialog, Tabs, Dropdown, Toast."
+		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame, Button, Input, Select, Table, Dialog, Tabs, Dropdown, Toast."
 	/>
 	<link rel="canonical" href="https://crt-ui.ritsuki.dev/" />
 
@@ -99,7 +107,7 @@
 	<meta property="og:title" content="crt-ui — CRT terminal components for Svelte 5" />
 	<meta
 		property="og:description"
-		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame, Button, Input, Select, Dialog, Tabs, Dropdown, Toast."
+		content="SSR-safe, token-driven CRT terminal components for Svelte 5: Typed, Crt, Meter, Boot, ScreenFrame, Button, Input, Select, Table, Dialog, Tabs, Dropdown, Toast."
 	/>
 	<meta property="og:url" content="https://crt-ui.ritsuki.dev/" />
 	<meta property="og:image" content="https://crt-ui.ritsuki.dev/og.png" />
@@ -392,6 +400,38 @@
 		<Button variant="solid" onclick={remove}>Delete</Button>
 	{/snippet}
 </Dialog>`}</pre>
+	</section>
+
+	<section class="demo">
+		<h2 class="label">Table</h2>
+		<hr class="rule" />
+		<div class="demo__stage demo__stage--form">
+			<Table
+				caption="Sectors"
+				rowHeader="id"
+				columns={[
+					{ key: 'id', label: 'ID' },
+					{ key: 'name', label: 'Name' },
+					{ key: 'load', label: 'Load %', align: 'end' }
+				]}
+				rows={[
+					{ id: '01', name: 'Alpha', load: 42 },
+					{ id: '02', name: 'Bravo', load: 7 },
+					{ id: '03', name: 'Charlie', load: 96 }
+				]}
+			/>
+		</div>
+		<p class="note dim">
+			A native <code>&lt;table&gt;</code> with a real caption, <code>scope</code> on every header
+			and an optional row-header column. When it is wider than its box it scrolls inside a focusable
+			region. Pass a <code>cell</code> snippet to render anything other than plain text.
+		</p>
+		<pre>{`<Table
+  caption="Sectors"
+  rowHeader="id"
+  columns={[{ key: 'id', label: 'ID' }, { key: 'load', label: 'Load %', align: 'end' }]}
+  rows={[{ id: '01', load: 42 }, { id: '02', load: 7 }]}
+/>`}</pre>
 	</section>
 
 	<section class="demo">

@@ -1,0 +1,18 @@
+/* ------------------------------------------------------------------
+   @ritsuki.kagerou/crt-ui — white phosphor preset (P4, a black-and-white
+   monitor)
+
+   Import after tokens.css:
+
+       import '@ritsuki.kagerou/crt-ui/tokens.css';
+       import '@ritsuki.kagerou/crt-ui/presets/white.css';
+
+   It sets the three palette tokens on :root; every shade, glow and sweep
+   is derived from them there, so nothing else changes.
+   ------------------------------------------------------------------ */
+
+:root {
+	--crt-phos: #d8dee6;
+	--crt-phos-hot: #ffffff;
+	--crt-bar: #e9edf2;
+}

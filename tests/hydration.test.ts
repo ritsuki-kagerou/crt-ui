@@ -10,6 +10,7 @@ import {
 	Input,
 	ScreenFrame,
 	Select,
+	Table,
 	Tabs,
 	Toaster,
 	toast
@@ -372,6 +373,66 @@ describe('Dialog', () => {
 		target.querySelector('dialog')!.close();
 		flushSync();
 		expect(open).toBe(false);
+		cleanup();
+	});
+});
+
+describe('Table', () => {
+	const columns = [
+		{ key: 'id', label: 'ID' },
+		{ key: 'load', label: 'LOAD', align: 'end' as const }
+	];
+	const rows = [
+		{ id: 'A', load: 1 },
+		{ id: 'B', load: 2 }
+	];
+
+	it('marks up headers, row headers and cells', () => {
+		const { target, cleanup } = mountIn(Table, { columns, rows, rowHeader: 'id', caption: 'T' });
+
+		expect(target.querySelector('caption')!.textContent).toBe('T');
+		expect([...target.querySelectorAll('thead th')].map((th) => th.getAttribute('scope'))).toEqual([
+			'col',
+			'col'
+		]);
+		expect(target.querySelectorAll('tbody th[scope="row"]')).toHaveLength(2);
+		expect(target.querySelectorAll('tbody td')).toHaveLength(2);
+		expect(target.querySelector('td')!.classList.contains('is-end')).toBe(true);
+		cleanup();
+	});
+
+	it('makes the scroll region focusable and named only when it has a name', () => {
+		const named = mountIn(Table, { columns, rows, label: 'SECTORS' });
+		const region = named.target.querySelector('[role="region"]')!;
+		expect(region.getAttribute('aria-label')).toBe('SECTORS');
+		expect(region.getAttribute('tabindex')).toBe('0');
+		named.cleanup();
+
+		const bare = mountIn(Table, { columns, rows });
+		expect(bare.target.querySelector('[role="region"]')).toBeNull();
+		expect(bare.target.querySelector('[tabindex]')).toBeNull();
+		bare.cleanup();
+	});
+
+	it('shows the empty message across every column', () => {
+		const { target, cleanup } = mountIn(Table, { columns, rows: [], empty: 'NONE' });
+		const cell = target.querySelector('tbody td')!;
+
+		expect(cell.textContent).toBe('NONE');
+		expect(cell.getAttribute('colspan')).toBe('2');
+		cleanup();
+	});
+
+	it('renders custom cells', () => {
+		const { target, cleanup } = mountIn(Table, {
+			columns,
+			rows,
+			cell: createRawSnippet<[Record<string, unknown>, { key: string }]>((row, col) => ({
+				render: () => `<b>${col().key}:${String(row()[col().key])}</b>`
+			}))
+		});
+
+		expect(target.querySelector('tbody td')!.innerHTML).toContain('<b>id:A</b>');
 		cleanup();
 	});
 });

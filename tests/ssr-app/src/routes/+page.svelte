@@ -9,6 +9,7 @@
 		Meter,
 		ScreenFrame,
 		Select,
+		Table,
 		Tabs,
 		Toaster,
 		toast,
@@ -121,6 +122,22 @@
 <p data-testid="overlay-state">{tab}|{action}|{closes}|{purged}</p>
 
 <button data-testid="raise" onclick={() => (level = 0.75)}>RAISE LEVEL</button>
+
+<div data-testid="table">
+	<Table
+		caption="UNITS"
+		rowHeader="id"
+		columns={[
+			{ key: 'id', label: 'ID' },
+			{ key: 'name', label: 'NAME' },
+			{ key: 'load', label: 'LOAD %', align: 'end' }
+		]}
+		rows={[
+			{ id: '01', name: 'ALPHA', load: 42 },
+			{ id: '02', name: 'BRAVO', load: 7 }
+		]}
+	/>
+</div>
 
 <Toaster />
 <Crt />

@@ -57,6 +57,7 @@ The components are written in runes mode and use Svelte 5 APIs only: events are 
 | `Button`      | Native button (or link with `href`), outline or solid.                   |
 | `Input`       | Labelled text field behind a prompt, with hint and error text.           |
 | `Select`      | Labelled native select in the same frame as `Input`.                     |
+| `Table`       | Native data table: caption, scoped headers, row headers, scrolls.        |
 | `Dialog`      | Modal window on the native `<dialog>`: focus trap, Escape, backdrop.     |
 | `Tabs`        | Tab list and panel with roving focus and arrow-key navigation.           |
 | `Dropdown`    | Menu button with a keyboard-navigable list of actions or links.          |
@@ -203,6 +204,40 @@ everywhere.
 <Select label="Phosphor" options={['green', 'amber']} bind:value={phosphor} />
 ```
 
+### `Table`
+
+```svelte
+<Table
+	caption="Sectors"
+	rowHeader="id"
+	columns={[
+		{ key: 'id', label: 'ID' },
+		{ key: 'name', label: 'Name' },
+		{ key: 'load', label: 'Load %', align: 'end' }
+	]}
+	rows={[
+		{ id: '01', name: 'Alpha', load: 42 },
+		{ id: '02', name: 'Bravo', load: 7 }
+	]}
+/>
+```
+
+| Prop        | Type                          | Default     | Notes                                                   |
+| ----------- | ----------------------------- | ----------- | ------------------------------------------------------- |
+| `columns`   | `TableColumn[]`               | —           | required; `{ key, label, align?: 'start' \| 'end' }`    |
+| `rows`      | `Row[]`                       | —           | required; each cell prints `row[column.key]`            |
+| `caption`   | `string`                      | —           | visible `<caption>`; also names the scroll region       |
+| `label`     | `string`                      | —           | accessible name when there is no visible `caption`      |
+| `rowHeader` | `string`                      | —           | the column whose cells become `<th scope="row">`        |
+| `empty`     | `string`                      | `'NO DATA'` | shown across every column when `rows` is empty          |
+| `cell`      | `Snippet<[Row, TableColumn]>` | —           | custom cell content, for anything other than plain text |
+
+A real `<table>`: headers carry `scope="col"`, so screen readers announce the column for each
+cell. A table wider than its box scrolls inside a region that takes a Tab stop, so keyboard
+users can reach the overflow; the region exists once `caption` or `label` gives it a name, so
+give every table one. `align: 'end'` right-aligns a column and uses tabular figures for
+numbers. There is no sorting or selection. `TableColumn` is exported as a type.
+
 ### `Dialog`
 
 | Prop          | Type         | Default | Notes                                                       |
@@ -337,42 +372,52 @@ The dimmer shades (`--crt-phos-mid`, `-dim`, `-faint`, `--crt-rule`, `--crt-glow
 everything. The derived tokens are computed where `tokens.css` declares them, on `:root`: when
 you re-skin a single subtree instead, set the shades you need on that ancestor as well.
 
+A white phosphor (P4) preset ships as one more file — it sets the same three tokens:
+
+```ts
+import '@ritsuki.kagerou/crt-ui/tokens.css';
+import '@ritsuki.kagerou/crt-ui/presets/white.css'; // after tokens.css
+```
+
 Every component carries the same defaults inline, so skipping `tokens.css` and declaring
 the tokens yourself works too.
 
-| Token                     | Default                           | Used by                                                     |
-| ------------------------- | --------------------------------- | ----------------------------------------------------------- |
-| `--crt-bg`                | `#000000`                         | `Button`, `Select`, `Dialog`, `Tabs`, `Dropdown`, `Toaster` |
-| `--crt-phos`              | `#4ade80`                         | `Crt`, `Input`, `Select`, derived shades                    |
-| `--crt-phos-hot`          | `#d5ffe6`                         | all but `Typed`                                             |
-| `--crt-bar`               | `#1ee07c`                         | `Meter`, `Boot`, `Button`, `Input`                          |
-| `--crt-phos-mid`          | 62% of `--crt-phos`               | all but `Typed`, `Crt`                                      |
-| `--crt-phos-dim`          | 40% of `--crt-phos`               | —                                                           |
-| `--crt-phos-faint`        | 16% of `--crt-phos`               | `Meter`, `Boot`                                             |
-| `--crt-rule`              | 26% of `--crt-phos`               | `ScreenFrame`, `Input`, `Select`                            |
-| `--crt-glow`              | 50% of `--crt-bar`                | `Meter`, `Boot`, `Button`, `Input`, `Select`                |
-| `--crt-alert`             | `#ff6b5e`                         | `Input`, `Select`, `Toaster`                                |
-| `--crt-mono`              | `ui-monospace, …, monospace`      | —                                                           |
-| `--crt-display`           | `var(--crt-mono)`                 | all but `Typed`, `Crt`                                      |
-| `--crt-tracking`          | `0.12em`                          | —                                                           |
-| `--crt-z`                 | `90`                              | `Crt`                                                       |
-| `--crt-scanline-gap`      | `3px`                             | `Crt`                                                       |
-| `--crt-scanline-ink`      | `rgba(0, 0, 0, 0.26)`             | `Crt`                                                       |
-| `--crt-scanline-opacity`  | `0.6`                             | `Crt`                                                       |
-| `--crt-sweep-height`      | `42vh`                            | `Crt`                                                       |
-| `--crt-sweep-duration`    | `7.5s`                            | `Crt`                                                       |
-| `--crt-flicker-duration`  | `4.2s`                            | `Crt`                                                       |
-| `--crt-flicker-ink`       | 2.5% of `--crt-phos`              | `Crt`                                                       |
-| `--crt-vignette-strength` | `0.55`                            | `Crt`                                                       |
-| `--crt-tube-glow`         | `6%`                              | `Crt`                                                       |
-| `--crt-dialog-width`      | `min(34rem, calc(100vw - 2rem))`  | `Dialog`                                                    |
-| `--crt-caret-width`       | `0.58em`                          | `Typed`                                                     |
-| `--crt-caret-height`      | `1.02em`                          | `Typed`                                                     |
-| `--crt-caret-blink`       | `1.06s`                           | `Typed`                                                     |
-| `--crt-cell-width`        | `6px`                             | `Meter`                                                     |
-| `--crt-cell-height`       | `12px`                            | `Meter`                                                     |
-| `--crt-cell-gap`          | `2px`                             | `Meter`                                                     |
-| `--crt-screen-min-height` | `46vh` (not declared in the file) | `ScreenFrame`                                               |
+| Token                         | Default                           | Used by                                                     |
+| ----------------------------- | --------------------------------- | ----------------------------------------------------------- |
+| `--crt-bg`                    | `#000000`                         | `Button`, `Select`, `Dialog`, `Tabs`, `Dropdown`, `Toaster` |
+| `--crt-phos`                  | `#4ade80`                         | `Crt`, `Input`, `Select`, derived shades                    |
+| `--crt-phos-hot`              | `#d5ffe6`                         | all but `Typed`                                             |
+| `--crt-bar`                   | `#1ee07c`                         | `Meter`, `Boot`, `Button`, `Input`                          |
+| `--crt-phos-mid`              | 62% of `--crt-phos`               | all but `Typed`, `Crt`                                      |
+| `--crt-phos-dim`              | 40% of `--crt-phos`               | —                                                           |
+| `--crt-phos-faint`            | 16% of `--crt-phos`               | `Meter`, `Boot`                                             |
+| `--crt-rule`                  | 26% of `--crt-phos`               | `ScreenFrame`, `Input`, `Select`                            |
+| `--crt-glow`                  | 50% of `--crt-bar`                | `Meter`, `Boot`, `Button`, `Input`, `Select`                |
+| `--crt-alert`                 | `#ff6b5e`                         | `Input`, `Select`, `Toaster`                                |
+| `--crt-mono`                  | `ui-monospace, …, monospace`      | —                                                           |
+| `--crt-display`               | `var(--crt-mono)`                 | all but `Typed`, `Crt`                                      |
+| `--crt-tracking`              | `0.12em`                          | `Table`                                                     |
+| `--crt-text-sm`, `-md`, `-lg` | `0.8rem`, `0.9rem`, `1.1rem`      | `Table` (`-md`)                                             |
+| `--crt-leading`               | `1.45`                            | `Table`                                                     |
+| `--crt-space-1` … `-5`        | `0.25rem` … `2.2rem`              | `Table`                                                     |
+| `--crt-z`                     | `90`                              | `Crt`                                                       |
+| `--crt-scanline-gap`          | `3px`                             | `Crt`                                                       |
+| `--crt-scanline-ink`          | `rgba(0, 0, 0, 0.26)`             | `Crt`                                                       |
+| `--crt-scanline-opacity`      | `0.6`                             | `Crt`                                                       |
+| `--crt-sweep-height`          | `42vh`                            | `Crt`                                                       |
+| `--crt-sweep-duration`        | `7.5s`                            | `Crt`                                                       |
+| `--crt-flicker-duration`      | `4.2s`                            | `Crt`                                                       |
+| `--crt-flicker-ink`           | 2.5% of `--crt-phos`              | `Crt`                                                       |
+| `--crt-vignette-strength`     | `0.55`                            | `Crt`                                                       |
+| `--crt-tube-glow`             | `6%`                              | `Crt`                                                       |
+| `--crt-dialog-width`          | `min(34rem, calc(100vw - 2rem))`  | `Dialog`                                                    |
+| `--crt-caret-width`           | `0.58em`                          | `Typed`                                                     |
+| `--crt-caret-height`          | `1.02em`                          | `Typed`                                                     |
+| `--crt-caret-blink`           | `1.06s`                           | `Typed`                                                     |
+| `--crt-cell-width`            | `6px`                             | `Meter`                                                     |
+| `--crt-cell-height`           | `12px`                            | `Meter`                                                     |
+| `--crt-cell-gap`              | `2px`                             | `Meter`                                                     |
+| `--crt-screen-min-height`     | `46vh` (not declared in the file) | `ScreenFrame`                                               |
 
 `--crt-phos-dim`, `--crt-mono` and `--crt-tracking` are declared for your app to use; no
 component reads them directly. Source: [`src/lib/tokens.css`](src/lib/tokens.css).
