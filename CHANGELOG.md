@@ -6,6 +6,8 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 
 ## [Unreleased]
 
+## [1.6.0] — 2026-10-07
+
 ### Added
 
 - `Crt`: `noise` (film grain) and `curvature` (rounded glass corners and bezel shading) props,
@@ -135,7 +137,8 @@ All notable changes to `@ritsuki.kagerou/crt-ui` are recorded here. The format f
 First release: `Crt`, `Typed`, `Boot`, `Meter` and `ScreenFrame`, themed through the `--crt-*`
 tokens in `tokens.css`, with deterministic SSR output and hydration covered by tests.
 
-[Unreleased]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ritsuki-kagerou/crt-ui/compare/v1.2.1...v1.3.0
